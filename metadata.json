@@ -1,0 +1,5 @@
+{
+  "name": "DevPrompt Studio",
+  "description": "A specialized AI prompt enhancer for developers and designers to generate high-quality, structured prompts for LLMs.",
+  "requestFramePermissions": []
+}

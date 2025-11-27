@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DevPrompt Studio</title>
+    <script>
+      // Polyfill process for browser environment to prevent "process is not defined" errors
+      // from libraries like framer-motion, radix-ui, and google-genai.
+      if (typeof window !== 'undefined') {
+        window.process = window.process || {};
+        window.process.env = window.process.env || {};
+        window.process.env.NODE_ENV = 'development';
+        window.process.version = '';
+        window.process.versions = {};
+        window.process.platform = 'browser';
+      }
+    </script>
+    <!-- Add Typography Plugin to Tailwind -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Marked.js for robust Markdown parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <!-- PrismJS for Syntax Highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-jsx.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-tsx.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-sql.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markdown.min.js"></script>
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+              mono: ['JetBrains Mono', 'monospace'],
+            },
+            colors: {
+              brand: {
+                50: '#eff6ff',
+                100: '#dbeafe',
+                200: '#bfdbfe',
+                300: '#93c5fd',
+                400: '#60a5fa',
+                500: '#3b82f6',
+                600: '#2563eb',
+                700: '#1d4ed8',
+                800: '#1e40af',
+                900: '#1e3a8a',
+              }
+            },
+            animation: {
+              'shimmer': 'shimmer 2s linear infinite',
+            },
+            keyframes: {
+              shimmer: {
+                '0%': { backgroundPosition: '-1000px 0' },
+                '100%': { backgroundPosition: '1000px 0' }
+              }
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      body {
+        background-color: #0f172a;
+        color: #e2e8f0;
+      }
+      /* Custom scrollbar for textareas */
+      textarea::-webkit-scrollbar {
+        width: 8px;
+      }
+      textarea::-webkit-scrollbar-track {
+        background: #1e293b; 
+      }
+      textarea::-webkit-scrollbar-thumb {
+        background: #475569; 
+        border-radius: 4px;
+      }
+      textarea::-webkit-scrollbar-thumb:hover {
+        background: #64748b; 
+      }
+      
+      /* Adjust Prism code block styling */
+      pre[class*="language-"] {
+        border-radius: 0.5rem;
+        margin: 0;
+        background: #1e293b !important; /* match slate-800 roughly */
+        border: 1px solid #334155;
+      }
+      code[class*="language-"], pre[class*="language-"] {
+        font-family: 'JetBrains Mono', monospace !important;
+        font-size: 0.85rem !important;
+        text-shadow: none !important;
+      }
+
+      /* Accessibility: High Contrast Focus Ring */
+      :focus-visible {
+        outline: 3px solid #8b5cf6; /* Violet 500 */
+        outline-offset: 2px;
+      }
+
+      /* Accessibility: Skip Link */
+      .skip-link {
+        position: absolute;
+        top: -100px;
+        left: 1rem;
+        background: #8b5cf6;
+        color: white;
+        font-weight: 600;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        z-index: 100;
+        transition: top 0.2s ease-in-out;
+        text-decoration: none;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+      }
+      .skip-link:focus {
+        top: 1rem;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react/": "https://esm.sh/react@18.3.1/",
+    "react": "https://esm.sh/react@18.3.1",
+    "react-dom/client": "https://esm.sh/react-dom@18.3.1/client",
+    "react-dom/": "https://esm.sh/react-dom@18.3.1/",
+    "react-dom": "https://esm.sh/react-dom@18.3.1",
+    "lucide-react": "https://esm.sh/lucide-react@0.263.1?external=react",
+    "@google/genai": "https://esm.sh/@google/genai",
+    "@radix-ui/react-tooltip": "https://esm.sh/@radix-ui/react-tooltip@1.0.7?external=react,react-dom",
+    "react-hot-toast": "https://esm.sh/react-hot-toast@2.4.1?external=react,react-dom",
+    "framer-motion": "https://esm.sh/framer-motion@10.16.4?external=react,react-dom",
+    "zod": "https://esm.sh/zod@3.22.4",
+    "dexie": "https://esm.sh/dexie@3.2.4",
+    "jspdf": "https://esm.sh/jspdf@2.5.1",
+    "html2canvas": "https://esm.sh/html2canvas@1.4.1",
+    "file-saver": "https://esm.sh/file-saver@2.0.5",
+    "react-swipeable": "https://esm.sh/react-swipeable@7.0.1?external=react,react-dom",
+    "react-window": "https://esm.sh/react-window@1.8.10?external=react,react-dom",
+    "react-virtualized-auto-sizer": "https://esm.sh/react-virtualized-auto-sizer@1.0.24?external=react,react-dom",
+    "web-vitals": "https://esm.sh/web-vitals@3.5.0",
+    "dompurify": "https://esm.sh/dompurify@3.0.9",
+    "zustand": "https://esm.sh/zustand@4.5.0?external=react",
+    "zustand/middleware": "https://esm.sh/zustand@4.5.0/middleware?external=react"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body>
+    <div id="root"></div>
+  <script type="module" src="/src/index.tsx"></script>
+</body>
+</html>
