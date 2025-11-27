@@ -11,10 +11,24 @@ interface Chain {
 interface EditorStore {
   chains: Chain[];
   variables: Record<string, string>;
+  syntaxHighlighting: boolean;
+  selectedLanguage: string;
+  autoCompletion: boolean;
+  lineNumbers: boolean;
+  wordWrap: boolean;
+  fontSize: number;
+  tabSize: number;
   addChain: (chain: Omit<Chain, 'id' | 'createdAt'>) => void;
   removeChain: (id: number) => void;
   setVariable: (key: string, value: string) => void;
   clearVariables: () => void;
+  setSyntaxHighlighting: (enabled: boolean) => void;
+  setSelectedLanguage: (language: string) => void;
+  setAutoCompletion: (enabled: boolean) => void;
+  setLineNumbers: (enabled: boolean) => void;
+  setWordWrap: (enabled: boolean) => void;
+  setFontSize: (size: number) => void;
+  setTabSize: (size: number) => void;
 }
 
 export const useEditorStore = create<EditorStore>()(
@@ -22,6 +36,13 @@ export const useEditorStore = create<EditorStore>()(
     (set) => ({
       chains: [],
       variables: {},
+      syntaxHighlighting: true,
+      selectedLanguage: 'plaintext',
+      autoCompletion: true,
+      lineNumbers: true,
+      wordWrap: true,
+      fontSize: 14,
+      tabSize: 2,
       addChain: (chain) => set((state) => ({
         chains: [...state.chains, { ...chain, id: Date.now(), createdAt: Date.now() }]
       })),
@@ -32,6 +53,13 @@ export const useEditorStore = create<EditorStore>()(
         variables: { ...state.variables, [key]: value }
       })),
       clearVariables: () => set({ variables: {} }),
+      setSyntaxHighlighting: (enabled) => set({ syntaxHighlighting: enabled }),
+      setSelectedLanguage: (language) => set({ selectedLanguage: language }),
+      setAutoCompletion: (enabled) => set({ autoCompletion: enabled }),
+      setLineNumbers: (enabled) => set({ lineNumbers: enabled }),
+      setWordWrap: (enabled) => set({ wordWrap: enabled }),
+      setFontSize: (size) => set({ fontSize: size }),
+      setTabSize: (size) => set({ tabSize: size }),
     }),
     { name: 'editor-store' }
   )

@@ -1,6 +1,7 @@
 import React, { useEffect, useState, Suspense, lazy, useMemo, useCallback } from 'react';
 import Header from './components/Header';
 import PromptInput from './components/PromptInput';
+import EnhancedPromptInput from './components/EnhancedPromptInput';
 import PromptOutput from './components/PromptOutput';
 import { enhancePromptStream } from './services/geminiService';
 import { HistoryItem, SavedProject, CustomTemplate, DomainType, GenerationMode } from './types';
