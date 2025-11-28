@@ -143,18 +143,18 @@ const PromptOutput: React.FC<PromptOutputProps> = ({
   return (
     <div className="flex flex-col h-full bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl shadow-black/20">
       {/* Header */}
-      <div className="px-6 py-4 border-b border-slate-800 bg-slate-900 flex items-center justify-between shrink-0">
-        <h2 className="text-sm font-semibold text-indigo-400 flex items-center gap-2">
+      <div className="px-4 py-3 border-b border-slate-700 bg-slate-800 flex items-center justify-between shrink-0 flex-wrap gap-2">
+        <h2 className="text-sm font-semibold text-blue-400 flex items-center gap-2">
           <FileText className="w-4 h-4" aria-hidden="true" />
           Enhanced Output
         </h2>
         
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
            {/* Chain Prompt Button */}
            {onChainPrompt && enhancedPrompt && (
             <button
               onClick={() => onChainPrompt(enhancedPrompt)}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 border border-transparent transition-all focus:ring-2 focus:ring-indigo-500 outline-none"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-700 text-slate-200 hover:bg-slate-600 border border-slate-600 transition-all focus:ring-2 focus:ring-blue-500 outline-none"
               title="Use this output as input for the next prompt"
             >
               <Link className="w-3.5 h-3.5" />
@@ -168,10 +168,10 @@ const PromptOutput: React.FC<PromptOutputProps> = ({
               onClick={handleShareClick}
               disabled={!enhancedPrompt}
               className={`
-                flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed focus:ring-2 focus:ring-indigo-500 outline-none
+                flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed focus:ring-2 focus:ring-blue-500 outline-none
                 ${shared
-                  ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20' 
-                  : 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-transparent'}
+                  ? 'bg-blue-500/10 text-blue-400 border border-blue-500/30' 
+                  : 'bg-slate-700 text-slate-200 hover:bg-slate-600 border border-slate-600'}
               `}
               title="Create a shareable link"
             >
@@ -197,10 +197,10 @@ const PromptOutput: React.FC<PromptOutputProps> = ({
             onClick={handleCopy}
             disabled={!enhancedPrompt}
             className={`
-              flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed focus:ring-2 focus:ring-indigo-500 outline-none
+              flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed focus:ring-2 focus:ring-blue-500 outline-none
               ${copied 
-                ? 'bg-green-500/10 text-green-400 border border-green-500/20' 
-                : 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-transparent'}
+                ? 'bg-green-500/10 text-green-400 border border-green-500/30' 
+                : 'bg-slate-700 text-slate-200 hover:bg-slate-600 border border-slate-600'}
             `}
           >
             {copied ? (
@@ -219,31 +219,31 @@ const PromptOutput: React.FC<PromptOutputProps> = ({
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-auto p-0 relative group bg-slate-950/30">
+      <div className="flex-1 overflow-auto p-0 relative group bg-slate-900">
         
         {/* Collapsible Original Prompt Section */}
         {originalPrompt && (
-           <div className="border-b border-slate-800/50 bg-slate-900/30">
+           <div className="border-b border-slate-700 bg-slate-800/50">
              <button 
                onClick={() => setShowOriginal(!showOriginal)}
-               className="w-full flex items-center justify-between px-6 py-3 hover:bg-slate-800/50 transition-colors text-left group/btn focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-inset"
+               className="w-full flex items-center justify-between px-4 py-3 hover:bg-slate-700/50 transition-colors text-left group/btn focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset"
                aria-expanded={showOriginal}
              >
-                <div className="flex items-center gap-2 text-xs font-bold text-slate-500 uppercase tracking-wider group-hover/btn:text-slate-400 transition-colors">
+                <div className="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-wider group-hover/btn:text-slate-300 transition-colors">
                   {showOriginal ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
                   Original Input
                 </div>
                 {!showOriginal && (
-                    <p className="text-xs text-slate-500 italic line-clamp-1 flex-1 ml-4 opacity-60">
+                    <p className="text-xs text-slate-400 italic line-clamp-1 flex-1 ml-4 opacity-70">
                         {originalPrompt}
                     </p>
                 )}
              </button>
              
              {showOriginal && (
-               <div className="px-6 pb-4 animate-in slide-in-from-top-2 fade-in duration-200">
-                 <div className="p-4 bg-slate-950/50 rounded-lg border border-slate-800/80 shadow-inner">
-                   <div className="text-sm text-slate-300 font-mono leading-relaxed whitespace-pre-wrap break-words">
+               <div className="px-4 pb-4 animate-in slide-in-from-top-2 fade-in duration-200">
+                 <div className="p-4 bg-slate-900 rounded-lg border border-slate-700 shadow-inner">
+                   <div className="text-sm text-slate-200 font-mono leading-relaxed whitespace-pre-wrap break-words">
                      {originalPrompt}
                    </div>
                  </div>
@@ -252,7 +252,7 @@ const PromptOutput: React.FC<PromptOutputProps> = ({
            </div>
         )}
 
-        <div className="p-6" ref={outputRef}>
+        <div className="p-4 sm:p-6" ref={outputRef}>
           {/* Loading State: Thinking Phase */}
           {isLoading && !enhancedPrompt && (
             <div className="space-y-6 animate-in fade-in duration-300">
@@ -267,7 +267,7 @@ const PromptOutput: React.FC<PromptOutputProps> = ({
 
           {enhancedPrompt ? (
             <div 
-              className="prose prose-invert prose-sm max-w-none prose-pre:bg-slate-900 prose-pre:border prose-pre:border-slate-800 prose-headings:text-indigo-200 prose-a:text-indigo-400 prose-strong:text-indigo-100"
+              className="prose prose-invert prose-sm max-w-none prose-pre:bg-slate-800 prose-pre:border prose-pre:border-slate-700 prose-headings:text-blue-300 prose-a:text-blue-400 prose-strong:text-blue-200 prose-code:text-blue-300"
               dangerouslySetInnerHTML={{ __html: renderMarkdown(enhancedPrompt) }}
             />
           ) : null}

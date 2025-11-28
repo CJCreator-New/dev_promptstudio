@@ -8,21 +8,24 @@ export default {
     extend: {
       colors: {
         primary: {
-          50: '#eef2ff',
-          400: '#818cf8',
-          500: '#6366f1',
-          600: '#4f46e5',
+          50: '#eff6ff',
+          400: '#60a5fa',
+          500: '#3b82f6',
+          600: '#2563eb',
         },
         secondary: {
           300: '#cbd5e1',
+          700: '#334155',
           800: '#1e293b',
         },
         muted: {
+          400: '#94a3b8',
           500: '#64748b',
         }
       },
       spacing: {
         'app': '1.5rem',
+        'safe': '0.75rem',
       },
       animation: {
         'fade-in': 'fadeIn 0.2s ease-in-out',

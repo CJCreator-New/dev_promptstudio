@@ -167,7 +167,7 @@ const PromptInput: React.FC<PromptInputProps> = ({
 
       {/* Advanced Options Checkboxes */}
       {isAdvancedMode && (
-        <div className={`px-6 pb-6 flex flex-wrap gap-y-3 gap-x-6 bg-slate-800/30 border-b border-slate-800 animate-in fade-in duration-300 ${readOnly ? 'pointer-events-none grayscale-[0.5]' : ''}`}>
+        <div className={`px-6 py-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 bg-slate-800/30 border-b border-slate-800 animate-in fade-in duration-300 ${readOnly ? 'pointer-events-none grayscale-[0.5]' : ''}`}>
           <Checkbox
             label="Stack Recs"
             icon={<span className="text-xs">⚡</span>}
@@ -216,26 +216,24 @@ const PromptInput: React.FC<PromptInputProps> = ({
             disabled={readOnly}
           />
           
-          <div className="pl-2 border-l border-slate-700">
-            <Checkbox
-              label="Thinking Mode"
-              icon={<BrainCircuit className="w-3 h-3" />}
-              checked={options.useThinking}
-              onChange={(e) => {
-                setOptions({...options, useThinking: e.target.checked});
-                if (e.target.checked) {
-                  notifyConfigChange("Thinking Mode enabled (v3.0 Pro)");
-                }
-              }}
-              disabled={readOnly}
-              className={options.useThinking ? 'text-purple-400' : ''}
-            />
-          </div>
+          <Checkbox
+            label="Thinking Mode"
+            icon={<BrainCircuit className="w-3 h-3" />}
+            checked={options.useThinking}
+            onChange={(e) => {
+              setOptions({...options, useThinking: e.target.checked});
+              if (e.target.checked) {
+                notifyConfigChange("Thinking Mode enabled (v3.0 Pro)");
+              }
+            }}
+            disabled={readOnly}
+            className={options.useThinking ? 'text-purple-400' : ''}
+          />
         </div>
       )}
 
       {/* Input Area */}
-      <div className="flex-1 p-6 flex flex-col gap-3">
+      <div className="flex-1 px-6 pb-6 flex flex-col gap-3">
         <Textarea
           id="main-input"
           label={options.mode === GenerationMode.OUTLINE ? 'Rough Topic or Idea' : 'Your Rough Idea'}

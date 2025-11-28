@@ -50,8 +50,8 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = ({
   ];
 
   return (
-    <div className={`p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 bg-slate-800/30 ${disabled ? 'pointer-events-none grayscale-[0.5]' : ''}`}>
-      <div className="space-y-1 min-w-0">
+    <div className={`p-4 sm:p-6 flex flex-wrap gap-4 bg-slate-800/30 ${disabled ? 'pointer-events-none grayscale-[0.5]' : ''}`}>
+      <div className="flex flex-col gap-2 min-w-[200px] flex-1">
         <ConfigLabel 
           label="Domain" 
           icon={<Code2 className="w-3 h-3" aria-hidden="true" />}
@@ -69,7 +69,7 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = ({
 
       {isAdvancedMode && (
         <>
-          <div className="space-y-1 min-w-0 animate-in fade-in slide-in-from-top-1 duration-200">
+          <div className="flex flex-col gap-2 min-w-[200px] flex-1 animate-in fade-in slide-in-from-top-1 duration-200">
             <ConfigLabel 
               label="Target AI Tool" 
               icon={<Bot className="w-3 h-3" aria-hidden="true" />}
@@ -85,7 +85,7 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = ({
             />
           </div>
 
-          <div className="space-y-1 min-w-0 animate-in fade-in slide-in-from-top-1 duration-200 delay-75">
+          <div className="flex flex-col gap-2 min-w-[200px] flex-1 animate-in fade-in slide-in-from-top-1 duration-200 delay-75">
             <ConfigLabel 
               label="Target Platform" 
               icon={<MonitorSmartphone className="w-3 h-3" aria-hidden="true" />}
@@ -101,7 +101,7 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = ({
             />
           </div>
 
-          <div className="space-y-1 min-w-0 animate-in fade-in slide-in-from-top-1 duration-200 delay-100">
+          <div className="flex flex-col gap-2 min-w-[200px] flex-1 animate-in fade-in slide-in-from-top-1 duration-200 delay-100">
             <ConfigLabel 
               label="Complexity" 
               icon={<Layers className="w-3 h-3" aria-hidden="true" />}

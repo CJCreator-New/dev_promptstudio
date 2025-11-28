@@ -4,6 +4,7 @@ import PromptInput from './components/PromptInput';
 import EnhancedPromptInput from './components/EnhancedPromptInput';
 import PromptOutput from './components/PromptOutput';
 import { enhancePromptStream } from './services/geminiService';
+import { enhancePromptWithKey } from './services/enhancementService';
 import { HistoryItem, SavedProject, CustomTemplate, DomainType, GenerationMode } from './types';
 import { generateShareLink, parseShareParam } from './utils/shareUtils';
 import { withRetry, formatErrorMessage, createErrorContext, logError } from './utils/errorHandling';
@@ -156,7 +157,7 @@ const App: React.FC = () => {
 
     const enhancePromise = withRetry(async () => {
         let accumulatedText = "";
-        const stream = enhancePromptStream(input, options);
+        const stream = enhancePromptWithKey(input, options, 'gemini');
         
         for await (const chunk of stream) {
             accumulatedText += chunk;
@@ -399,7 +400,7 @@ const App: React.FC = () => {
 
   return (
     <ErrorBoundary>
-      <div className="min-h-screen bg-slate-950 text-slate-200 flex flex-col font-sans selection:bg-indigo-500/30 selection:text-indigo-200">
+      <div className="min-h-screen bg-slate-900 text-slate-100 flex flex-col font-sans selection:bg-blue-500/30 selection:text-blue-200">
         <AppToaster />
         <LiveRegion message={liveMessage} priority="polite" />
         
@@ -427,15 +428,15 @@ const App: React.FC = () => {
         <Header onFeedback={() => setFeedbackOpen(true)} />
         
         {isReadOnly && (
-          <div className="bg-indigo-900/30 border-b border-indigo-500/20 py-3 px-4">
-            <div className="max-w-7xl mx-auto flex items-center justify-between">
-              <div className="flex items-center gap-2 text-indigo-300">
+          <div className="bg-blue-900/20 border-b border-blue-500/20 py-3 px-4">
+            <div className="max-w-7xl mx-auto flex items-center justify-between flex-wrap gap-2">
+              <div className="flex items-center gap-2 text-blue-300">
                 <Eye className="w-4 h-4" />
                 <span className="text-sm font-medium">Viewing Shared Prompt (Read Only)</span>
               </div>
               <button 
                 onClick={handleEditCopy}
-                className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-3 py-2 min-h-[44px] rounded-lg transition-colors focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-indigo-500 outline-none"
+                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-3 py-2 min-h-[44px] rounded-lg transition-colors focus:ring-2 focus:ring-offset-1 focus:ring-offset-slate-900 focus:ring-blue-500 outline-none"
                 aria-label="Make editable copy of this prompt"
               >
                 <Edit3 className="w-3.5 h-3.5" />
@@ -445,17 +446,17 @@ const App: React.FC = () => {
           </div>
         )}
 
-        <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 flex flex-col lg:flex-row gap-6 relative overflow-x-hidden">
+        <main className="flex-1 max-w-[1920px] w-full mx-auto px-3 sm:px-4 lg:px-6 py-4 lg:py-6 flex flex-col lg:flex-row gap-4 lg:gap-5 relative">
           
           <button 
             onClick={() => setMobileHistoryOpen(true)}
-            className="lg:hidden absolute top-0 right-4 p-3 min-w-[44px] min-h-[44px] text-slate-400 hover:text-white focus:ring-2 focus:ring-indigo-500 rounded-lg flex items-center justify-center"
+            className="lg:hidden fixed top-20 right-4 z-40 p-3 min-w-[44px] min-h-[44px] bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 focus:ring-2 focus:ring-blue-500 rounded-lg flex items-center justify-center shadow-lg border border-slate-700"
             aria-label="Open history sidebar"
           >
             <Menu className="w-6 h-6" />
           </button>
 
-          <div className="flex-1 w-full lg:max-w-xl h-[calc(100vh-140px)] min-h-[500px] min-w-0">
+          <div className="flex-1 w-full lg:max-w-[45%] h-[calc(100vh-120px)] min-h-[400px]">
             <PromptInput 
               input={input}
               setInput={setInput}
@@ -472,7 +473,7 @@ const App: React.FC = () => {
             />
           </div>
 
-          <div className="flex-1 w-full h-[calc(100vh-140px)] min-h-[500px] min-w-0">
+          <div className="flex-1 w-full lg:max-w-[45%] h-[calc(100vh-120px)] min-h-[400px]">
              <PromptOutput 
                enhancedPrompt={enhancedPrompt} 
                originalPrompt={originalPrompt}
@@ -483,9 +484,9 @@ const App: React.FC = () => {
              />
           </div>
 
-          <div className="hidden lg:block w-72 h-[calc(100vh-140px)]">
-             <div className="h-full bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
-               <Suspense fallback={<div className="p-4 animate-pulse"><div className="h-4 bg-slate-700 rounded mb-2"></div><div className="h-4 bg-slate-700 rounded w-3/4"></div></div>}>
+          <div className="hidden lg:block w-80 xl:w-96 h-[calc(100vh-120px)] flex-shrink-0">
+             <div className="h-full bg-slate-800 border border-slate-700 rounded-xl overflow-hidden shadow-lg">
+               <Suspense fallback={<div className="p-4 animate-pulse"><div className="h-4 bg-slate-600 rounded mb-2"></div><div className="h-4 bg-slate-600 rounded w-3/4"></div></div>}>
                  <HistorySidebar 
                    history={history} 
                    savedProjects={savedProjects}
@@ -507,10 +508,10 @@ const App: React.FC = () => {
 
           {isMobileHistoryOpen && (
             <div className="fixed inset-0 z-50 lg:hidden flex" role="dialog" aria-modal="true" aria-label="History Sidebar">
-              <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setMobileHistoryOpen(false)}></div>
-              <div className="relative w-80 max-w-[80%] h-full bg-slate-900 border-r border-slate-800 shadow-2xl animate-in slide-in-from-left duration-200">
-                <div className="p-4 flex justify-end">
-                  <button onClick={() => setMobileHistoryOpen(false)} className="text-slate-400 focus:ring-2 focus:ring-indigo-500 rounded-lg p-2 min-w-[44px] min-h-[44px] flex items-center justify-center" aria-label="Close sidebar">
+              <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setMobileHistoryOpen(false)}></div>
+              <div className="relative w-80 max-w-[85%] h-full bg-slate-800 border-r border-slate-700 shadow-2xl animate-in slide-in-from-left duration-200">
+                <div className="p-4 flex justify-end border-b border-slate-700">
+                  <button onClick={() => setMobileHistoryOpen(false)} className="text-slate-400 hover:text-white focus:ring-2 focus:ring-blue-500 rounded-lg p-2 min-w-[44px] min-h-[44px] flex items-center justify-center bg-slate-700 hover:bg-slate-600" aria-label="Close sidebar">
                     <X className="w-6 h-6" />
                   </button>
                 </div>
@@ -537,66 +538,66 @@ const App: React.FC = () => {
 
           {isTemplateModalOpen && (
             <div className="fixed inset-0 z-[60] flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-              <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setTemplateModalOpen(false)}></div>
-              <div className="relative bg-slate-900 border border-slate-800 rounded-xl w-full max-w-lg shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
-                <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/50">
+              <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setTemplateModalOpen(false)}></div>
+              <div className="relative bg-slate-800 border border-slate-600 rounded-xl w-full max-w-lg shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+                <div className="px-6 py-4 border-b border-slate-700 flex items-center justify-between bg-slate-800">
                   <h3 id="modal-title" className="text-lg font-semibold text-white">
                     {templateModalMode === 'create' ? 'Create New Template' : 'Edit Template'}
                   </h3>
-                  <button onClick={() => setTemplateModalOpen(false)} className="text-slate-400 hover:text-white transition-colors focus:ring-2 focus:ring-indigo-500 rounded-lg p-2 min-w-[44px] min-h-[44px] flex items-center justify-center" aria-label="Close modal">
+                  <button onClick={() => setTemplateModalOpen(false)} className="text-slate-400 hover:text-white transition-colors focus:ring-2 focus:ring-blue-500 rounded-lg p-2 min-w-[44px] min-h-[44px] flex items-center justify-center bg-slate-700 hover:bg-slate-600" aria-label="Close modal">
                     <X className="w-5 h-5" />
                   </button>
                 </div>
                 
-                <div className="p-6 space-y-4">
+                <div className="p-6 space-y-4 bg-slate-800">
                   <div>
-                    <label htmlFor="template-name" className="block text-xs font-medium text-slate-300 uppercase mb-1">Template Name</label>
+                    <label htmlFor="template-name" className="block text-xs font-medium text-slate-300 uppercase mb-2">Template Name</label>
                     <input 
                       id="template-name"
                       type="text" 
                       value={templateFormData.name}
                       onChange={e => setTemplateFormData({ name: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                      className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-slate-100 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all"
                       placeholder="e.g., React Component Structure"
                       autoFocus
                     />
                   </div>
                   
                   <div>
-                    <label htmlFor="template-domain" className="block text-xs font-medium text-slate-300 uppercase mb-1">Domain</label>
+                    <label htmlFor="template-domain" className="block text-xs font-medium text-slate-300 uppercase mb-2">Domain</label>
                     <select 
                        id="template-domain"
                        value={templateFormData.domain}
                        onChange={e => setTemplateFormData({ domain: e.target.value })}
-                       className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all appearance-none"
+                       className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-slate-100 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all appearance-none"
                     >
                        {Object.values(DomainType).map(d => <option key={d} value={d}>{d}</option>)}
                     </select>
                   </div>
 
                   <div>
-                    <label htmlFor="template-content" className="block text-xs font-medium text-slate-300 uppercase mb-1">Template Content</label>
+                    <label htmlFor="template-content" className="block text-xs font-medium text-slate-300 uppercase mb-2">Template Content</label>
                     <textarea 
                       id="template-content"
                       value={templateFormData.text}
                       onChange={e => setTemplateFormData({ text: e.target.value })}
-                      className="w-full h-40 bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 text-sm focus:ring-2 focus:ring-indigo-500 outline-none resize-none font-mono leading-relaxed"
+                      className="w-full h-40 bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-slate-100 text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-none font-mono leading-relaxed"
                       placeholder="Enter your prompt template here..."
                     />
                   </div>
                 </div>
 
-                <div className="px-6 py-4 bg-slate-950/30 border-t border-slate-800 flex justify-end gap-3">
+                <div className="px-6 py-4 bg-slate-900 border-t border-slate-700 flex justify-end gap-3">
                   <button 
                     onClick={() => setTemplateModalOpen(false)}
-                    className="px-4 py-3 min-h-[44px] text-sm font-medium text-slate-300 hover:text-white transition-colors focus:ring-2 focus:ring-indigo-500 rounded-lg"
+                    className="px-4 py-3 min-h-[44px] text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-700 transition-colors focus:ring-2 focus:ring-blue-500 rounded-lg"
                   >
                     Cancel
                   </button>
                   <button 
                     onClick={handleSaveTemplateForm}
                     disabled={!templateFormData.name.trim() || !templateFormData.text.trim()}
-                    className="px-4 py-3 min-h-[44px] text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-500 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-indigo-900/20 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-900"
+                    className="px-4 py-3 min-h-[44px] text-sm font-bold text-white bg-blue-600 hover:bg-blue-500 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
                   >
                     {templateModalMode === 'create' ? 'Create Template' : 'Update Template'}
                   </button>

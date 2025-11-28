@@ -1,0 +1,82 @@
+import React from 'react';
+import { Key, Shield } from 'lucide-react';
+import { useApiKeyStore } from '../../store/useApiKeyStore';
+import { PROVIDER_CONFIGS, KeyProvider } from '../../types/apiKeys';
+import { ApiKeyInputRow } from './ApiKeyInputRow';
+import { verifyApiKey } from '../../services/llm/verificationService';
+import { notifySuccess, notifyError } from '../ToastSystem';
+
+export const ApiKeyManager: React.FC = () => {
+  const { keys, setKey, updateKeyStatus, deleteKey } = useApiKeyStore();
+
+  const handleSave = (provider: KeyProvider, value: string) => {
+    setKey(provider, value);
+    notifySuccess(`${PROVIDER_CONFIGS[provider].label} API key saved`);
+  };
+
+  const handleVerify = async (provider: KeyProvider, value: string) => {
+    updateKeyStatus(provider, 'loading');
+    
+    try {
+      const isValid = await verifyApiKey(provider, value);
+      updateKeyStatus(provider, isValid ? 'verified' : 'invalid');
+      
+      if (isValid) {
+        notifySuccess(`${PROVIDER_CONFIGS[provider].label} API key verified`);
+      } else {
+        notifyError(`${PROVIDER_CONFIGS[provider].label} API key verification failed`);
+      }
+    } catch (error) {
+      updateKeyStatus(provider, 'invalid');
+      notifyError('Verification failed. Please check your connection.');
+    }
+  };
+
+  const handleDelete = (provider: KeyProvider) => {
+    if (window.confirm(`Delete ${PROVIDER_CONFIGS[provider].label} API key?`)) {
+      deleteKey(provider);
+      notifySuccess(`${PROVIDER_CONFIGS[provider].label} API key deleted`);
+    }
+  };
+
+  return (
+    <div className="max-w-4xl mx-auto p-6 space-y-6">
+      <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="bg-blue-500/10 p-2 rounded-lg">
+            <Key className="w-6 h-6 text-blue-400" />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold text-slate-100">API Key Management</h2>
+            <p className="text-sm text-slate-400">Manage your LLM provider API keys</p>
+          </div>
+        </div>
+
+        <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4 mb-6 flex gap-3">
+          <Shield className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
+          <div className="text-sm text-blue-200">
+            <p className="font-medium mb-1">Security Notice</p>
+            <p className="text-blue-300/80">
+              Your API keys are encrypted and stored locally in your browser. They never leave your device except when making requests to the respective LLM providers.
+            </p>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          {(Object.keys(PROVIDER_CONFIGS) as KeyProvider[]).map((provider) => (
+            <ApiKeyInputRow
+              key={provider}
+              provider={provider}
+              config={PROVIDER_CONFIGS[provider]}
+              value={keys[provider]?.value || ''}
+              status={keys[provider]?.status || 'unverified'}
+              onSave={handleSave}
+              onDelete={handleDelete}
+              onVerify={handleVerify}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};

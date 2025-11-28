@@ -21,7 +21,7 @@ export const Textarea: React.FC<TextareaProps> = React.memo(({
   const errorId = error ? `${textareaId}-error` : undefined;
   const helperId = helperText ? `${textareaId}-helper` : undefined;
   
-  const textareaClasses = `input-base rounded-xl p-4 placeholder-slate-600 resize-none font-mono leading-relaxed ${
+  const textareaClasses = `input-base rounded-xl p-4 placeholder-slate-500 resize font-mono leading-relaxed min-h-[300px] bg-slate-800 text-slate-100 ${
     error ? 'input-error' : 'input-valid'
   } ${className}`;
   

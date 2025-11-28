@@ -25,7 +25,7 @@ export const Select: React.FC<SelectProps> = React.memo(({
   const errorId = error ? `${selectId}-error` : undefined;
   const helperId = helperText ? `${selectId}-helper` : undefined;
   
-  const selectClasses = `input-base appearance-none ${
+  const selectClasses = `input-base appearance-none bg-slate-800 text-slate-100 ${
     error ? 'input-error' : 'input-valid'
   } ${className}`;
   
@@ -46,6 +46,7 @@ export const Select: React.FC<SelectProps> = React.memo(({
           className={selectClasses}
           aria-invalid={!!error}
           aria-describedby={[errorId, helperId].filter(Boolean).join(' ') || undefined}
+          style={{ colorScheme: 'dark' }}
           {...props}
         >
           {options.map((option) => (

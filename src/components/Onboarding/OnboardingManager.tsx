@@ -59,8 +59,9 @@ export const OnboardingManager: React.FC<OnboardingManagerProps> = ({ isBooting 
       // Start the tour
       setTimeout(() => intro.start(), 500);
     } else {
-      console.error('Intro.js not loaded');
+      // Intro.js not loaded - skip tour gracefully
       completeOnboarding();
+      logger.info('Onboarding skipped - Intro.js not available');
     }
   };
 
