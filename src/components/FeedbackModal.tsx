@@ -37,7 +37,7 @@ function isValidEmail(email: string): { valid: boolean; error?: string } {
 export const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose }) => {
   const [type, setType] = useState<'bug' | 'feature'>('feature');
   const [message, setMessage] = useState('');
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState(() => localStorage.getItem('userEmail') || '');
   const [emailError, setEmailError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -79,9 +79,9 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose })
       });
       
       if (response.ok) {
+        localStorage.setItem('userEmail', email);
         notifySuccess("Feedback sent successfully! Thanks for your input.");
         setMessage('');
-        setEmail('');
         setType('feature');
         onClose();
       } else {
