@@ -20,8 +20,11 @@ import { LiveRegion } from './components/LiveRegion';
 import { UpdateNotification } from './components/UpdateNotification';
 import { OfflineIndicator } from './components/OfflineIndicator';
 import { LoginModal } from './components/LoginModal';
+import { RecentPromptsRail } from './components/RecentPromptsRail';
+import { ShareModal } from './components/ShareModal';
 import { isUserLoggedIn, saveUserSession } from './utils/auth';
 import { useUIStore, useAppStore, useDataStore } from './store';
+import { trackEvent } from './utils/analytics';
 
 // Lazy load components
 const FeedbackModal = lazy(() => import('./components/FeedbackModal').then(m => ({ default: m.FeedbackModal })));
@@ -84,6 +87,7 @@ const App: React.FC = () => {
   const [liveMessage, setLiveMessage] = useState('');
   const [showApiKeySetup, setShowApiKeySetup] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(isUserLoggedIn());
+  const [showShareModal, setShowShareModal] = useState(false);
 
   const handleLogin = (email: string) => {
     saveUserSession(email);
@@ -213,6 +217,12 @@ const App: React.FC = () => {
         };
         addHistoryItem(newItem);
         setLiveMessage(`${options.mode === GenerationMode.OUTLINE ? 'Outline' : 'Prompt'} generated successfully`);
+        trackEvent('prompt_enhanced', { 
+          mode: options.mode, 
+          domain: options.domain, 
+          input_length: input.length, 
+          output_length: accumulatedText.length 
+        });
     }, { maxAttempts: 3, delay: 1000, backoff: true });
 
     Promise.race([enhancePromise, timeoutPromise])
@@ -251,17 +261,29 @@ const App: React.FC = () => {
 
   const handleShare = useCallback(() => {
     if (!enhancedPrompt) return;
-    
-    const link = generateShareLink({
-      input,
-      options,
-      enhancedPrompt,
-      originalPrompt
-    });
+    setShowShareModal(true);
+    trackEvent('share_opened');
+  }, [enhancedPrompt]);
 
-    navigator.clipboard.writeText(link);
-    notifySuccess("Share link copied to clipboard!");
-  }, [enhancedPrompt, input, options, originalPrompt]);
+  const handleRerunPrompt = useCallback((item: HistoryItem) => {
+    setInput(item.original);
+    setOptions({ domain: item.domain, mode: item.mode });
+    notifySuccess('Prompt loaded from history');
+    trackEvent('prompt_rerun', { prompt_id: item.id });
+  }, [setInput, setOptions]);
+
+  const handleSaveAsTemplate = useCallback((item: HistoryItem) => {
+    setInput(item.original);
+    handleOpenCreateTemplate();
+    trackEvent('template_from_history', { prompt_id: item.id });
+  }, [setInput]);
+
+  const handleDuplicatePrompt = useCallback((item: HistoryItem) => {
+    setInput(item.original);
+    resetPrompts();
+    notifySuccess('Prompt duplicated');
+    trackEvent('prompt_duplicated', { prompt_id: item.id });
+  }, [setInput, resetPrompts]);
 
   const handleEditCopy = useCallback(() => {
     setReadOnly(false);
@@ -284,6 +306,7 @@ const App: React.FC = () => {
     };
 
     addSavedProject(newProject);
+    trackEvent('project_saved', { domain: options.domain, mode: options.mode });
     notifySuccess(`Project "${name}" saved!`);
   }, [input, options, addSavedProject]);
 
@@ -353,6 +376,7 @@ const App: React.FC = () => {
         timestamp: Date.now()
       };
       addCustomTemplate(newTemplate);
+      trackEvent('template_created', { domain: templateFormData.domain, has_variables: templateFormData.text.includes('{{') });
       notifySuccess(`Template "${templateFormData.name}" created!`);
     } else {
       if (editingTemplateId) {
@@ -540,8 +564,8 @@ const App: React.FC = () => {
              />
           </div>
 
-          <div className="hidden lg:block w-80 xl:w-96 h-[calc(100vh-120px)] flex-shrink-0">
-             <div className="h-full bg-slate-800 border border-slate-700 rounded-xl overflow-hidden shadow-lg">
+          <div className="hidden lg:flex w-80 xl:w-96 h-[calc(100vh-120px)] flex-shrink-0 gap-4">
+             <div className="flex-1 bg-slate-800 border border-slate-700 rounded-xl overflow-hidden shadow-lg">
                <Suspense fallback={<div className="p-4 animate-pulse"><div className="h-4 bg-slate-600 rounded mb-2"></div><div className="h-4 bg-slate-600 rounded w-3/4"></div></div>}>
                  <HistorySidebar 
                    history={history} 
@@ -560,6 +584,13 @@ const App: React.FC = () => {
                  />
                </Suspense>
              </div>
+             
+             <RecentPromptsRail
+               history={history}
+               onRerun={handleRerunPrompt}
+               onSaveAsTemplate={handleSaveAsTemplate}
+               onDuplicate={handleDuplicatePrompt}
+             />
           </div>
 
           {isMobileHistoryOpen && (
@@ -662,6 +693,13 @@ const App: React.FC = () => {
             </div>
           )}
 
+          <ShareModal
+            isOpen={showShareModal}
+            onClose={() => setShowShareModal(false)}
+            original={originalPrompt}
+            enhanced={enhancedPrompt}
+            options={options}
+          />
         </main>
       </div>
     </ErrorBoundary>

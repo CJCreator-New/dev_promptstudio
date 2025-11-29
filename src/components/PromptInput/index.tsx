@@ -14,6 +14,8 @@ import { ConfigurationPanel } from './ConfigurationPanel';
 import { SuggestionChips } from './SuggestionChips';
 import { usePromptSuggestions } from '../../hooks/usePromptSuggestions';
 import { useValidation } from '../../hooks/useValidation';
+import { RecipeDropdown } from '../RecipeDropdown';
+import { PromptRecipe } from '../../utils/promptRecipes';
 
 interface PromptInputProps {
   input: string;
@@ -79,6 +81,13 @@ const PromptInput: React.FC<PromptInputProps> = ({
     notifyConfigChange('Configuration updated');
   };
 
+  const handleRecipeSelect = (recipe: PromptRecipe) => {
+    if (readOnly) return;
+    setInput(recipe.template);
+    setOptions({ ...options, domain: recipe.domain });
+    notifySuccess(`Loaded recipe: ${recipe.label}`);
+  };
+
   const isAdvancedMode = options.mode !== GenerationMode.BASIC;
 
   const exampleDropdownItems = EXAMPLE_PROMPTS.map(ex => ({
@@ -105,6 +114,8 @@ const PromptInput: React.FC<PromptInputProps> = ({
         <div className="flex items-center gap-2 shrink-0">
           {!readOnly && !isBooting && (
             <>
+              <RecipeDropdown onSelect={handleRecipeSelect} />
+              
               <button 
                 onClick={onSaveTemplate}
                 disabled={!input.trim()}
