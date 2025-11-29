@@ -19,6 +19,8 @@ import { OnboardingManager } from './components/Onboarding/OnboardingManager';
 import { LiveRegion } from './components/LiveRegion';
 import { UpdateNotification } from './components/UpdateNotification';
 import { OfflineIndicator } from './components/OfflineIndicator';
+import { LoginModal } from './components/LoginModal';
+import { isUserLoggedIn, saveUserSession } from './utils/auth';
 import { useUIStore, useAppStore, useDataStore } from './store';
 
 // Lazy load components
@@ -81,6 +83,13 @@ const App: React.FC = () => {
   const { status: saveStatus, lastSaved } = useAutoSave(input, options);
   const [liveMessage, setLiveMessage] = useState('');
   const [showApiKeySetup, setShowApiKeySetup] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(isUserLoggedIn());
+
+  const handleLogin = (email: string) => {
+    saveUserSession(email);
+    setIsLoggedIn(true);
+    notifySuccess('Welcome to DevPrompt Studio!');
+  };
   
   useKeyboardShortcuts([
     {
@@ -431,6 +440,10 @@ const App: React.FC = () => {
       setRecoveryDraft(null);
   };
 
+  if (!isLoggedIn) {
+    return <LoginModal onLogin={handleLogin} />;
+  }
+
   return (
     <ErrorBoundary>
       <div className="min-h-screen bg-slate-900 text-slate-100 flex flex-col font-sans selection:bg-blue-500/30 selection:text-blue-200">
@@ -465,7 +478,10 @@ const App: React.FC = () => {
           Skip to main content
         </a>
 
-        <Header onFeedback={() => setFeedbackOpen(true)} />
+        <Header 
+          onFeedback={() => setFeedbackOpen(true)} 
+          onLogout={() => setIsLoggedIn(false)}
+        />
         
         {isReadOnly && (
           <div className="bg-blue-900/20 border-b border-blue-500/20 py-3 px-4">

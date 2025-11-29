@@ -1,13 +1,23 @@
 import React, { useState } from 'react';
-import { Sparkles, Terminal, MessageSquare, Key, X } from 'lucide-react';
+import { Sparkles, Terminal, MessageSquare, Key, X, LogOut } from 'lucide-react';
 import { ApiKeyManager } from './settings/ApiKeyManager';
+import { clearUserSession, getUserSession } from '../utils/auth';
 
 interface HeaderProps {
   onFeedback?: () => void;
+  onLogout?: () => void;
 }
 
-const Header: React.FC<HeaderProps> = React.memo(({ onFeedback }) => {
+const Header: React.FC<HeaderProps> = React.memo(({ onFeedback, onLogout }) => {
   const [showApiKeys, setShowApiKeys] = useState(false);
+  const userSession = getUserSession();
+
+  const handleLogout = () => {
+    if (window.confirm('Are you sure you want to logout? Your data will remain saved locally.')) {
+      clearUserSession();
+      onLogout?.();
+    }
+  };
 
   return (
     <>
@@ -50,6 +60,18 @@ const Header: React.FC<HeaderProps> = React.memo(({ onFeedback }) => {
             >
               <MessageSquare className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Feedback</span>
+            </button>
+          )}
+
+          {userSession && (
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-2 text-xs font-medium text-red-300 hover:text-red-200 transition-colors bg-red-900/20 hover:bg-red-900/30 px-3 py-2 rounded-lg border border-red-500/30 hover:border-red-500/50 focus:ring-2 focus:ring-red-500 focus:ring-offset-1 focus:ring-offset-slate-900 outline-none min-h-[44px]"
+              aria-label="Logout"
+              title={`Logout (${userSession.email})`}
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Logout</span>
             </button>
           )}
         </div>
