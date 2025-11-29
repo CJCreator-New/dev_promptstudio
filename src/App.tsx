@@ -23,6 +23,7 @@ import { LoginModal } from './components/LoginModal';
 import { RecentPromptsRail } from './components/RecentPromptsRail';
 import { ShareModal } from './components/ShareModal';
 import { OnboardingChecklist } from './components/OnboardingChecklist';
+import { TemplateGallery } from './components/TemplateGallery';
 import { isUserLoggedIn, saveUserSession } from './utils/auth';
 import { useUIStore, useAppStore, useDataStore } from './store';
 import { trackEvent } from './utils/analytics';
@@ -89,11 +90,18 @@ const App: React.FC = () => {
   const [showApiKeySetup, setShowApiKeySetup] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(isUserLoggedIn());
   const [showShareModal, setShowShareModal] = useState(false);
+  const [showTemplateGallery, setShowTemplateGallery] = useState(false);
 
   const handleLogin = (email: string) => {
     saveUserSession(email);
     setIsLoggedIn(true);
     notifySuccess('Welcome to DevPrompt Studio!');
+  };
+
+  const handleApplyTemplate = (template: string, domain: DomainType) => {
+    setInput(template);
+    setOptions({ domain });
+    notifySuccess('Template applied!');
   };
   
   useKeyboardShortcuts([
@@ -507,6 +515,7 @@ const App: React.FC = () => {
         <Header 
           onFeedback={() => setFeedbackOpen(true)} 
           onLogout={() => setIsLoggedIn(false)}
+          onTemplateGallery={() => setShowTemplateGallery(true)}
         />
         
         {isReadOnly && (
@@ -701,6 +710,12 @@ const App: React.FC = () => {
             original={originalPrompt}
             enhanced={enhancedPrompt}
             options={options}
+          />
+
+          <TemplateGallery
+            isOpen={showTemplateGallery}
+            onClose={() => setShowTemplateGallery(false)}
+            onApply={handleApplyTemplate}
           />
         </main>
       </div>

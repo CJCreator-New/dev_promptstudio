@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
-import { Sparkles, Terminal, MessageSquare, Key, X, LogOut } from 'lucide-react';
+import { Sparkles, Terminal, MessageSquare, Key, X, LogOut, BookTemplate } from 'lucide-react';
 import { ApiKeyManager } from './settings/ApiKeyManager';
 import { clearUserSession, getUserSession } from '../utils/auth';
 
 interface HeaderProps {
   onFeedback?: () => void;
   onLogout?: () => void;
+  onTemplateGallery?: () => void;
 }
 
-const Header: React.FC<HeaderProps> = React.memo(({ onFeedback, onLogout }) => {
+const Header: React.FC<HeaderProps> = React.memo(({ onFeedback, onLogout, onTemplateGallery }) => {
   const [showApiKeys, setShowApiKeys] = useState(false);
   const userSession = getUserSession();
 
@@ -47,6 +48,18 @@ const Header: React.FC<HeaderProps> = React.memo(({ onFeedback, onLogout }) => {
 
 
 
+          {onTemplateGallery && (
+            <button
+              onClick={onTemplateGallery}
+              className="flex items-center gap-2 text-xs font-medium text-slate-300 hover:text-white transition-colors bg-slate-700 hover:bg-slate-600 px-3 py-2 rounded-lg border border-slate-600 hover:border-slate-500 focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900 outline-none min-h-[44px]"
+              aria-label="Browse Template Gallery"
+              title="Browse Template Gallery"
+            >
+              <BookTemplate className="w-3.5 h-3.5" />
+              <span className="hidden md:inline">Templates</span>
+            </button>
+          )}
+
           <button
             onClick={() => setShowApiKeys(true)}
             className="flex items-center gap-2 text-xs font-medium text-slate-300 hover:text-white transition-colors bg-slate-700 hover:bg-slate-600 px-3 py-2 rounded-lg border border-slate-600 hover:border-slate-500 focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900 outline-none min-h-[44px]"
@@ -54,7 +67,7 @@ const Header: React.FC<HeaderProps> = React.memo(({ onFeedback, onLogout }) => {
             title="Manage API Keys"
           >
             <Key className="w-3.5 h-3.5" />
-            <span>API Keys</span>
+            <span className="hidden md:inline">API Keys</span>
           </button>
 
           {onFeedback && (
