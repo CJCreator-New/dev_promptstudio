@@ -275,7 +275,7 @@ export const enhancePromptStream = async function* (
     Please generate the output now.
   `;
 
-  const modelName = options.useThinking ? 'gemini-3-pro-preview' : 'gemini-2.5-flash';
+  const modelName = options.useThinking ? 'gemini-2.0-flash-thinking-exp-01-21' : 'gemini-2.0-flash-exp';
   
   const requestConfig: any = {
     systemInstruction: SYSTEM_INSTRUCTION,
