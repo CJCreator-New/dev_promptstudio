@@ -45,10 +45,7 @@ const Header: React.FC<HeaderProps> = React.memo(({ onFeedback, onLogout }) => {
             </div>
           )}
 
-          <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs font-semibold" role="status">
-            <Sparkles className="w-3 h-3" aria-hidden="true" />
-            <span>Powered by Gemini 2.5 Flash</span>
-          </div>
+
 
           <button
             onClick={() => setShowApiKeys(true)}
