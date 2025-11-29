@@ -17,6 +17,8 @@ import { db } from './utils/db';
 import { reportWebVitals } from './utils/performance';
 import { OnboardingManager } from './components/Onboarding/OnboardingManager';
 import { LiveRegion } from './components/LiveRegion';
+import { UpdateNotification } from './components/UpdateNotification';
+import { OfflineIndicator } from './components/OfflineIndicator';
 import { useUIStore, useAppStore, useDataStore } from './store';
 
 // Lazy load components
@@ -434,6 +436,8 @@ const App: React.FC = () => {
       <div className="min-h-screen bg-slate-900 text-slate-100 flex flex-col font-sans selection:bg-blue-500/30 selection:text-blue-200">
         <AppToaster />
         <LiveRegion message={liveMessage} priority="polite" />
+        <UpdateNotification />
+        <OfflineIndicator />
         
         <Suspense fallback={null}>
           {recoveryDraft && (
