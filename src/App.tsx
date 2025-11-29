@@ -6,11 +6,13 @@ import { enhancePromptWithKey } from './services/enhancementService';
 import { HistoryItem, SavedProject, CustomTemplate, DomainType, GenerationMode } from './types';
 import { generateShareLink, parseShareParam } from './utils/shareUtils';
 import { withRetry, formatErrorMessage, createErrorContext, logError } from './utils/errorHandling';
+import { measurePerformance } from './utils/performanceMonitor';
 import { Menu, X, Eye, Edit3 } from 'lucide-react';
 import { AppToaster, toast, notifySuccess, notifyError, showErrorWithRetry } from './components/ToastSystem';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { EXAMPLE_PROMPTS } from './utils/constants';
 import { useAutoSave } from './hooks/useAutoSave';
+import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { db } from './utils/db';
 import { reportWebVitals } from './utils/performance';
 import { OnboardingManager } from './components/Onboarding/OnboardingManager';
@@ -21,6 +23,7 @@ import { useUIStore, useAppStore, useDataStore } from './store';
 const FeedbackModal = lazy(() => import('./components/FeedbackModal').then(m => ({ default: m.FeedbackModal })));
 const RecoveryModal = lazy(() => import('./components/RecoveryModal').then(m => ({ default: m.RecoveryModal })));
 const HistorySidebar = lazy(() => import('./components/HistorySidebar'));
+const ApiKeyManager = lazy(() => import('./components/settings/ApiKeyManager').then(m => ({ default: m.ApiKeyManager })));
 
 const App: React.FC = () => {
   // Zustand stores
@@ -74,6 +77,21 @@ const App: React.FC = () => {
 
   const { status: saveStatus, lastSaved } = useAutoSave(input, options);
   const [liveMessage, setLiveMessage] = useState('');
+  
+  useKeyboardShortcuts([
+    {
+      key: 'e',
+      ctrl: true,
+      description: 'Enhance prompt',
+      action: () => !isLoading && input.trim() && handleEnhance()
+    },
+    {
+      key: 's',
+      ctrl: true,
+      description: 'Save project',
+      action: () => input.trim() && handleSaveProject()
+    }
+  ]);
 
   useEffect(() => {
     reportWebVitals(console.log);
@@ -147,6 +165,8 @@ const App: React.FC = () => {
     setLoading(true);
     setOriginalPrompt(input);
     setEnhancedPrompt("");
+    
+    const perfStart = performance.now();
 
     const TIMEOUT_MS = 60000; 
     const timeoutPromise = new Promise((_, reject) => 
@@ -178,6 +198,9 @@ const App: React.FC = () => {
 
     Promise.race([enhancePromise, timeoutPromise])
       .then(() => {
+          const perfEnd = performance.now();
+          const duration = perfEnd - perfStart;
+          console.log(`⚡ Enhancement completed in ${duration.toFixed(2)}ms`);
           notifySuccess(options.mode === GenerationMode.OUTLINE ? "Outline generated!" : "Prompt enhanced!");
       })
       .catch((error: any) => {

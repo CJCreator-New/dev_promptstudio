@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useMemo } from 'react';
 import * as Tooltip from '@radix-ui/react-tooltip';
 import { Settings2, Lock, Save, LayoutTemplate, Lightbulb, ChevronDown, Sparkles, BrainCircuit } from 'lucide-react';
 import { DomainType, ComplexityLevel, EnhancementOptions, PlatformType, GenerationMode } from '../../types';
@@ -240,7 +240,7 @@ const PromptInput: React.FC<PromptInputProps> = ({
               {options.mode === GenerationMode.OUTLINE ? '📋 Rough Topic or Idea' : '💡 Your Rough Idea'}
             </label>
             <div className="flex items-center gap-2">
-              <span className="text-xs text-slate-400">{input.length} chars • ~{Math.ceil(input.length / 4)} tokens</span>
+              <span className="text-xs text-slate-400">{input.length} chars • ~{useMemo(() => Math.ceil(input.length / 4), [input.length])} tokens</span>
               {input.length > 0 && !readOnly && (
                 <button
                   onClick={() => setInput('')}

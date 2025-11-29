@@ -25,7 +25,7 @@ export const Checkbox: React.FC<CheckboxProps> = React.memo(({
         />
         <div className="w-4 h-4 border border-slate-600 rounded bg-slate-800 peer-checked:bg-indigo-500 peer-checked:border-indigo-500 transition-colors focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-900" />
         {icon && (
-          <div className="w-3 h-3 text-white absolute top-0.5 left-0.5 opacity-0 peer-checked:opacity-100">
+          <div className="absolute inset-0 flex items-center justify-center text-white opacity-0 peer-checked:opacity-100">
             {icon}
           </div>
         )}

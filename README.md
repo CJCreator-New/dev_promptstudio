@@ -6,7 +6,9 @@
 
 AI-powered prompt enhancement tool built with React, TypeScript, and Google Gemini API.
 
-View your app in AI Studio: https://ai.studio/apps/drive/1Go09lCl7VDGrCYaIfJD8Aw9Yk2V1ibjl
+🚀 **[Live Demo](https://yourusername.github.io/devprompt-studio/)** | 📖 [Documentation](#features) | 🐛 [Report Bug](https://github.com/yourusername/devprompt-studio/issues)
+
+> **Note**: Replace `yourusername` with your GitHub username after deployment
 
 ## Features
 
@@ -181,6 +183,28 @@ npm run build
 # Preview production build
 npm run preview
 ```
+
+## Deploy to GitHub Pages
+
+1. **Enable GitHub Pages**:
+   - Go to repository Settings → Pages
+   - Source: GitHub Actions
+   - Save
+
+2. **Push to GitHub**:
+   ```bash
+   git add .
+   git commit -m "Deploy to GitHub Pages"
+   git push origin main
+   ```
+
+3. **Access your app**:
+   - Visit: `https://yourusername.github.io/devprompt-studio/`
+   - Replace `yourusername` with your GitHub username
+
+4. **Update base path** (if using different repo name):
+   - Edit `vite.config.ts`: `base: '/your-repo-name/'`
+   - Update `public/manifest.json` paths
 
 ## Accessibility
 

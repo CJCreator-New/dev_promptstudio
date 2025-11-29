@@ -145,6 +145,21 @@ export class DevPromptDB extends Dexie {
       prompts: '++id, *tags, folderId, isFavorite, createdAt',
       savedSearches: '++id, name, createdAt'
     });
+    this.version(3).stores({
+      drafts: '++id, timestamp',
+      workspaces: '++id, name, createdAt',
+      versions: '++id, promptId, timestamp',
+      tags: '++id, name, createdAt, usageCount',
+      folders: '++id, parentId, path, name',
+      aiProviders: '++id, name, enabled',
+      analytics: '++id, promptId, lastUsed, successRate',
+      chains: '++id, name, createdAt',
+      communityTemplates: '++id, rating, downloads, createdAt',
+      themes: '++id, name, isActive',
+      operations: '++id, timestamp, synced, type',
+      prompts: '++id, *tags, folderId, isFavorite, createdAt, updatedAt, [folderId+isFavorite]',
+      savedSearches: '++id, name, createdAt'
+    });
   }
 }
 

@@ -10,8 +10,10 @@ type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
 const MAX_RETRY_ATTEMPTS = 3;
 /** Base delay for exponential backoff retry */
 const RETRY_DELAY = 1000;
-/** Debounce delay before triggering save (2 seconds) */
-const DEBOUNCE_DELAY = 2000;
+/** Debounce delay before triggering save (3 seconds) */
+const DEBOUNCE_DELAY = 3000;
+/** Maximum wait time before forcing save (10 seconds) */
+const MAX_WAIT_DELAY = 10000;
 
 /**
  * Auto-saves user input to IndexedDB with debouncing and retry logic
@@ -78,7 +80,7 @@ export const useAutoSave = (input: string, options: EnhancementOptions) => {
     }
   }, [input, options]);
 
-  // Debounced save on changes (exactly 2s)
+  // Debounced save on changes (3s debounce, 10s max wait)
   useEffect(() => {
     if (!input.trim()) {
       setStatus('idle');

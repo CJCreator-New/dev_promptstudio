@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Copy, Check, Terminal, FileText, Share2, Link, ChevronDown, ChevronRight } from 'lucide-react';
 import { OutputPreviewSkeleton } from './Loaders';
 import { ProgressBar, ThinkingSteps } from './LoadingPrimitives';
@@ -114,17 +114,17 @@ const PromptOutput: React.FC<PromptOutputProps> = ({
     }
   };
 
-  // Render markdown using Marked.js and sanitize with DOMPurify
-  const renderMarkdown = (text: string) => {
-    if (!text) return "";
-    if (!(window as any).marked) return text;
+  // Render markdown using Marked.js and sanitize with DOMPurify (memoized)
+  const renderedMarkdown = useMemo(() => {
+    if (!enhancedPrompt) return "";
+    if (!(window as any).marked) return enhancedPrompt;
     
     // Parse Markdown to HTML
-    const rawHtml = (window as any).marked.parse(text);
+    const rawHtml = (window as any).marked.parse(enhancedPrompt);
     
     // Sanitize HTML
     return DOMPurify.sanitize(rawHtml);
-  };
+  }, [enhancedPrompt]);
 
   if (!enhancedPrompt && !originalPrompt && !isLoading) {
     return (
@@ -268,7 +268,7 @@ const PromptOutput: React.FC<PromptOutputProps> = ({
           {enhancedPrompt ? (
             <div 
               className="prose prose-invert prose-sm max-w-none prose-pre:bg-slate-800 prose-pre:border prose-pre:border-slate-700 prose-headings:text-blue-300 prose-a:text-blue-400 prose-strong:text-blue-200 prose-code:text-blue-300"
-              dangerouslySetInnerHTML={{ __html: renderMarkdown(enhancedPrompt) }}
+              dangerouslySetInnerHTML={{ __html: renderedMarkdown }}
             />
           ) : null}
         </div>

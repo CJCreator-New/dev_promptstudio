@@ -1,0 +1,24 @@
+{
+  "name": "DevPrompt Studio",
+  "short_name": "DevPrompt",
+  "description": "AI-powered prompt enhancement tool for developers",
+  "start_url": "/devprompt-studio/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#3b82f6",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/devprompt-studio/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/devprompt-studio/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -306,6 +306,13 @@ export const enhancePromptStream = async function* (
         // Apply response interceptors
         const interceptedChunk = applyResponseInterceptors({ text: chunk.text, timestamp: Date.now() });
         yield interceptedChunk.text;
+        
+        // Non-blocking metric updates
+        if ('requestIdleCallback' in window) {
+          requestIdleCallback(() => {
+            logger.debug('Chunk received', { length: chunk.text.length });
+          }, { timeout: 2000 });
+        }
       }
     }
 
