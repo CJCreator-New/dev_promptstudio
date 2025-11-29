@@ -24,6 +24,7 @@ const FeedbackModal = lazy(() => import('./components/FeedbackModal').then(m => 
 const RecoveryModal = lazy(() => import('./components/RecoveryModal').then(m => ({ default: m.RecoveryModal })));
 const HistorySidebar = lazy(() => import('./components/HistorySidebar'));
 const ApiKeyManager = lazy(() => import('./components/settings/ApiKeyManager').then(m => ({ default: m.ApiKeyManager })));
+const ApiKeySetupModal = lazy(() => import('./components/ApiKeySetupModal').then(m => ({ default: m.ApiKeySetupModal })));
 
 const App: React.FC = () => {
   // Zustand stores
@@ -77,6 +78,7 @@ const App: React.FC = () => {
 
   const { status: saveStatus, lastSaved } = useAutoSave(input, options);
   const [liveMessage, setLiveMessage] = useState('');
+  const [showApiKeySetup, setShowApiKeySetup] = useState(false);
   
   useKeyboardShortcuts([
     {
@@ -95,6 +97,12 @@ const App: React.FC = () => {
 
   useEffect(() => {
     reportWebVitals(console.log);
+    
+    // Check if user has API key
+    const hasApiKey = localStorage.getItem('hasApiKey');
+    if (!hasApiKey) {
+      setTimeout(() => setShowApiKeySetup(true), 2000);
+    }
   }, []);
 
   useEffect(() => {
@@ -439,6 +447,11 @@ const App: React.FC = () => {
           <FeedbackModal 
             isOpen={isFeedbackOpen} 
             onClose={() => setFeedbackOpen(false)} 
+          />
+          
+          <ApiKeySetupModal 
+            isOpen={showApiKeySetup} 
+            onClose={() => setShowApiKeySetup(false)} 
           />
         </Suspense>
         

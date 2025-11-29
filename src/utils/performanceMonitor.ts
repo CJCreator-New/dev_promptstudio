@@ -2,6 +2,8 @@
  * Performance monitoring utilities for tracking operations
  */
 
+import { shouldShowLogs } from './environment';
+
 export interface PerformanceMetric {
   name: string;
   duration: number;
@@ -41,10 +43,13 @@ const recordMetric = (name: string, startMark: string, endMark: string) => {
     };
     
     metrics.push(metric);
-    console.log(`⚡ ${name}: ${measure.duration.toFixed(2)}ms`);
     
-    if (measure.duration > 1000) {
-      console.warn(`⚠️ Slow operation: ${name} took ${measure.duration.toFixed(2)}ms`);
+    if (shouldShowLogs) {
+      console.log(`⚡ ${name}: ${measure.duration.toFixed(2)}ms`);
+      
+      if (measure.duration > 1000) {
+        console.warn(`⚠️ Slow operation: ${name} took ${measure.duration.toFixed(2)}ms`);
+      }
     }
     
     // Keep only last 100 metrics
