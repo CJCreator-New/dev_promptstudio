@@ -1,8 +1,22 @@
 {
   "name": "devprompt-studio",
   "private": true,
-  "version": "0.0.0",
+  "version": "2.0.0",
   "type": "module",
+  "description": "Git for prompts. Version-controlled prompt engineering workspace for developers.",
+  "keywords": [
+    "prompt-engineering",
+    "llm-ops",
+    "ai-tools",
+    "developer-tools",
+    "prompt-testing",
+    "version-control",
+    "team-collaboration"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/CJCreator-New/dev_promptstudio"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -17,7 +31,9 @@
     "@google/genai": "latest",
     "@monaco-editor/react": "^4.7.0",
     "@radix-ui/react-tooltip": "1.0.7",
+    "@types/canvas-confetti": "^1.9.0",
     "@types/crypto-js": "^4.2.2",
+    "canvas-confetti": "^1.9.4",
     "crypto-js": "^4.2.0",
     "dexie": "3.2.4",
     "diff-match-patch": "^1.0.5",

@@ -22,6 +22,7 @@ import { OfflineIndicator } from './components/OfflineIndicator';
 import { LoginModal } from './components/LoginModal';
 import { RecentPromptsRail } from './components/RecentPromptsRail';
 import { ShareModal } from './components/ShareModal';
+import { OnboardingChecklist } from './components/OnboardingChecklist';
 import { isUserLoggedIn, saveUserSession } from './utils/auth';
 import { useUIStore, useAppStore, useDataStore } from './store';
 import { trackEvent } from './utils/analytics';
@@ -475,6 +476,7 @@ const App: React.FC = () => {
         <LiveRegion message={liveMessage} priority="polite" />
         <UpdateNotification />
         <OfflineIndicator />
+        <OnboardingChecklist />
         
         <Suspense fallback={null}>
           {recoveryDraft && (
