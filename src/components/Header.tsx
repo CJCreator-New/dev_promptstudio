@@ -36,6 +36,15 @@ const Header: React.FC<HeaderProps> = React.memo(({ onFeedback, onLogout }) => {
         </div>
         
         <div className="flex items-center gap-2 sm:gap-3">
+          {userSession && (
+            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-700/50 border border-slate-600 text-slate-300 text-xs" title="Logged in as">
+              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold text-xs">
+                {userSession.email.charAt(0).toUpperCase()}
+              </div>
+              <span className="font-medium">{userSession.email}</span>
+            </div>
+          )}
+
           <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs font-semibold" role="status">
             <Sparkles className="w-3 h-3" aria-hidden="true" />
             <span>Powered by Gemini 2.5 Flash</span>
