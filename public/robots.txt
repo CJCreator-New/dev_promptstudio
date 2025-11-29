@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://yourusername.github.io/devprompt-studio/sitemap.xml
+Sitemap: https://cjcreator-new.github.io/dev_promptstudio/sitemap.xml

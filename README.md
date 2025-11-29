@@ -6,9 +6,7 @@
 
 AI-powered prompt enhancement tool built with React, TypeScript, and Google Gemini API.
 
-🚀 **[Live Demo](https://yourusername.github.io/devprompt-studio/)** | 📖 [Documentation](#features) | 🐛 [Report Bug](https://github.com/yourusername/devprompt-studio/issues)
-
-> **Note**: Replace `yourusername` with your GitHub username after deployment
+🚀 **[Live Demo](https://cjcreator-new.github.io/dev_promptstudio/)** | 📖 [Documentation](#features) | 🐛 [Report Bug](https://github.com/CJCreator-New/dev_promptstudio/issues)
 
 ## Features
 
@@ -199,8 +197,7 @@ npm run preview
    ```
 
 3. **Access your app**:
-   - Visit: `https://yourusername.github.io/devprompt-studio/`
-   - Replace `yourusername` with your GitHub username
+   - Visit: `https://cjcreator-new.github.io/dev_promptstudio/`
 
 4. **Update base path** (if using different repo name):
    - Edit `vite.config.ts`: `base: '/your-repo-name/'`
