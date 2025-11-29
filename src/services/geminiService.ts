@@ -147,13 +147,16 @@ async function retryOperation<T>(
  */
 export const enhancePromptStream = async function* (
   rawInput: string,
-  options: EnhancementOptions
+  options: EnhancementOptions,
+  apiKey?: string
 ): AsyncGenerator<string, void, unknown> {
-  if (!process.env.API_KEY) {
+  const key = apiKey || process.env.API_KEY;
+  
+  if (!key) {
     throw new Error("API Key is missing. Please check your environment configuration.");
   }
 
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const ai = new GoogleGenAI({ apiKey: key });
 
   let toolStrategy = "";
   const tool = options.targetTool || 'general';

@@ -24,33 +24,19 @@ export async function* enhancePromptWithKey(
   const store = useApiKeyStore.getState();
   const userKey = store.keys[provider];
   
-  // Priority: User key (if verified) -> Default key
-  if (userKey && userKey.status === 'verified') {
-    console.log(`Using user-provided ${provider} key`);
-    
-    // Temporarily override API key for this request
-    const originalKey = process.env.API_KEY;
-    process.env.API_KEY = userKey.value;
-    
-    try {
-      for await (const chunk of enhancePromptStream(prompt, options)) {
-        fullResponse += chunk;
-        yield chunk;
-      }
-      responseCache.set(cacheKey, fullResponse);
-    } finally {
-      // Restore original key
-      if (originalKey) {
-        process.env.API_KEY = originalKey;
-      }
-    }
-  } else {
-    // Use default application key
-    console.log(`Using default ${provider} key`);
-    for await (const chunk of enhancePromptStream(prompt, options)) {
-      fullResponse += chunk;
-      yield chunk;
-    }
-    responseCache.set(cacheKey, fullResponse);
+  const apiKey = (userKey && userKey.status === 'verified') 
+    ? userKey.value 
+    : process.env.API_KEY;
+  
+  if (!apiKey) {
+    throw new Error('API Key is missing. Please add your API key in Settings.');
   }
+  
+  console.log(userKey?.status === 'verified' ? `Using user ${provider} key` : `Using default ${provider} key`);
+  
+  for await (const chunk of enhancePromptStream(prompt, options, apiKey)) {
+    fullResponse += chunk;
+    yield chunk;
+  }
+  responseCache.set(cacheKey, fullResponse);
 }
