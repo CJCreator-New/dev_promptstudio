@@ -1,53 +1,37 @@
 # Changelog
 
-All notable changes to DevPrompt Studio.
-
-## [Unreleased]
+## [2.0.0] - 2024
 
 ### Added
-- Comprehensive JSDoc comments for all public functions
-- Architecture documentation (ARCHITECTURE.md)
-- Component documentation (COMPONENTS.md)
-- Accessibility testing guide (ACCESSIBILITY.md)
-- Property-based tests for all requirements
-- Unit tests for hooks and services
-- Accessibility tests with axe-core
-- Auto-save with 2s debounce and retry logic
-- Draft recovery modal on app load
-- Error boundary with state preservation
-- Atomic component library (Button, Modal, Input, etc.)
-- Custom hooks (useAutoSave, useLocalStorage, etc.)
-- API service with interceptors and retry logic
-- Hardware-accelerated animations
-- Reduced motion support
-- Skeleton loading states
-- Focus management in modals
-- Keyboard navigation support
+- **Template Gallery**: Browse and apply 6 pre-built prompt templates with search/filter
+- **Version History**: Save and compare prompt versions with timeline view
+- **Variable Interpolation**: Templates support `{{variable}}` placeholders with editor
+- **A/B Testing Workspace**: Test multiple prompt variants side-by-side
+- **Evaluation Panel**: Score outputs with custom criteria and weights
+- **Onboarding Checklist**: Interactive 4-step guide with progress tracking
+- **Recent Prompts Rail**: Quick access to last 10 prompts with actions
+- **Email Authentication**: Simple login flow with session persistence
+- **Analytics Tracking**: Event tracking for key user actions
 
-### Changed
-- Refactored PromptInput into sub-components
-- Enhanced Tailwind CSS with custom utilities
-- Improved error handling with structured types
-- Updated README with architecture overview
-- Downgraded Vitest from 4.0.14 to 3.0.0 (bug fix)
+### Enhanced
+- Updated README with "Git for prompts" positioning
+- Added 3 use-case examples (refactor, standardize, A/B test)
+- Split features into "Available Now" vs "Planned" sections
+- Improved Header with Templates button
+- Enhanced PromptOutput with A/B Test and Evaluate buttons
 
-### Fixed
-- Test runner issues with Vitest 4.x
-- ARIA violations in tablist structure
-- Focus trap in modal components
-- Color contrast for WCAG AA compliance
+### Technical
+- Upgraded Dexie schema for version management
+- Added variable interpolation utilities
+- Implemented confetti celebration on onboarding completion
+- Bundle size: 917KB (270KB gzipped)
 
-### Removed
-- Unused test files (simple.test.ts, minimal.test.ts)
-- Inline styles replaced with Tailwind classes
+## [1.0.0] - Initial Release
 
-## [0.0.0] - Initial Release
-
-### Added
-- Initial React + TypeScript setup
-- Google Gemini AI integration
-- Basic prompt enhancement
-- IndexedDB storage with Dexie
-- Zustand state management
-- Tailwind CSS styling
-- Vite build configuration
+### Core Features
+- Prompt enhancement with AI
+- History tracking
+- Custom templates
+- Project management
+- Export to multiple formats
+- Dark theme UI

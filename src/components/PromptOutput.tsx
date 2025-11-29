@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { Copy, Check, Terminal, FileText, Share2, Link, ChevronDown, ChevronRight } from 'lucide-react';
+import { Copy, Check, Terminal, FileText, Share2, Link, ChevronDown, ChevronRight, FlaskConical, Target } from 'lucide-react';
 import { OutputPreviewSkeleton } from './Loaders';
 import { ProgressBar, ThinkingSteps } from './LoadingPrimitives';
 import { ExportMenu, ExportFormat, ExportScope } from './ExportMenu';
@@ -14,6 +14,8 @@ interface PromptOutputProps {
   options: EnhancementOptions;
   onShare?: () => void;
   onChainPrompt?: (output: string) => void;
+  onABTest?: () => void;
+  onEvaluate?: () => void;
   isLoading?: boolean;
 }
 
@@ -23,6 +25,8 @@ const PromptOutput: React.FC<PromptOutputProps> = ({
   options, 
   onShare, 
   onChainPrompt,
+  onABTest,
+  onEvaluate,
   isLoading = false 
 }) => {
   const [copied, setCopied] = useState(false);
@@ -150,6 +154,28 @@ const PromptOutput: React.FC<PromptOutputProps> = ({
         </h2>
         
         <div className="flex items-center gap-2 flex-wrap">
+           {onABTest && (
+            <button
+              onClick={onABTest}
+              className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-700 text-slate-200 hover:bg-slate-600 border border-slate-600 transition-all focus:ring-2 focus:ring-blue-500 outline-none"
+              title="A/B Test Variants"
+            >
+              <FlaskConical className="w-3.5 h-3.5" />
+              <span className="hidden md:inline">A/B Test</span>
+            </button>
+           )}
+
+           {onEvaluate && enhancedPrompt && (
+            <button
+              onClick={onEvaluate}
+              className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-700 text-slate-200 hover:bg-slate-600 border border-slate-600 transition-all focus:ring-2 focus:ring-blue-500 outline-none"
+              title="Evaluate Output"
+            >
+              <Target className="w-3.5 h-3.5" />
+              <span className="hidden md:inline">Evaluate</span>
+            </button>
+           )}
+
            {/* Chain Prompt Button */}
            {onChainPrompt && enhancedPrompt && (
             <button

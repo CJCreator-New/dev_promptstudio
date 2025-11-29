@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Clock, Play, Save, Copy, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Clock, Play, Save, Copy, ChevronLeft, ChevronRight, GitBranch } from 'lucide-react';
 import { HistoryItem } from '../types';
 import { trackEvent } from '../utils/analytics';
 
@@ -8,13 +8,15 @@ interface RecentPromptsRailProps {
   onRerun: (item: HistoryItem) => void;
   onSaveAsTemplate: (item: HistoryItem) => void;
   onDuplicate: (item: HistoryItem) => void;
+  onViewVersions?: (item: HistoryItem) => void;
 }
 
 export const RecentPromptsRail: React.FC<RecentPromptsRailProps> = ({
   history,
   onRerun,
   onSaveAsTemplate,
-  onDuplicate
+  onDuplicate,
+  onViewVersions
 }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
@@ -26,6 +28,7 @@ export const RecentPromptsRail: React.FC<RecentPromptsRailProps> = ({
     if (action === 'rerun') onRerun(item);
     else if (action === 'save') onSaveAsTemplate(item);
     else if (action === 'duplicate') onDuplicate(item);
+    else if (action === 'versions' && onViewVersions) onViewVersions(item);
   };
 
   if (isCollapsed) {
@@ -74,7 +77,7 @@ export const RecentPromptsRail: React.FC<RecentPromptsRailProps> = ({
                 <div className="text-sm text-slate-300 line-clamp-2 mb-3">
                   {item.original}
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 flex-wrap">
                   <button
                     onClick={() => handleAction('rerun', item)}
                     className="flex items-center gap-1 px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs rounded transition-colors"
@@ -96,6 +99,15 @@ export const RecentPromptsRail: React.FC<RecentPromptsRailProps> = ({
                   >
                     <Copy className="w-3 h-3" />
                   </button>
+                  {onViewVersions && (
+                    <button
+                      onClick={() => handleAction('versions', item)}
+                      className="flex items-center gap-1 px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs rounded transition-colors"
+                      title="Version History"
+                    >
+                      <GitBranch className="w-3 h-3" />
+                    </button>
+                  )}
                 </div>
               </div>
             ))}

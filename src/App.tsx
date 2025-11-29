@@ -24,6 +24,12 @@ import { RecentPromptsRail } from './components/RecentPromptsRail';
 import { ShareModal } from './components/ShareModal';
 import { OnboardingChecklist } from './components/OnboardingChecklist';
 import { TemplateGallery } from './components/TemplateGallery';
+import { VersionTimeline } from './components/VersionTimeline';
+import { VersionCompare } from './components/VersionCompare';
+import { VariableEditor } from './components/VariableEditor';
+import { ABTestWorkspace } from './components/ABTestWorkspace';
+import { EvaluationPanel } from './components/EvaluationPanel';
+import { extractVariables } from './utils/variableInterpolation';
 import { isUserLoggedIn, saveUserSession } from './utils/auth';
 import { useUIStore, useAppStore, useDataStore } from './store';
 import { trackEvent } from './utils/analytics';
@@ -91,6 +97,11 @@ const App: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(isUserLoggedIn());
   const [showShareModal, setShowShareModal] = useState(false);
   const [showTemplateGallery, setShowTemplateGallery] = useState(false);
+  const [versionItem, setVersionItem] = useState<HistoryItem | null>(null);
+  const [compareVersions, setCompareVersions] = useState<{ v1: string; v2: string } | null>(null);
+  const [variableTemplate, setVariableTemplate] = useState<{ template: string; domain: DomainType } | null>(null);
+  const [showABTest, setShowABTest] = useState(false);
+  const [showEvaluation, setShowEvaluation] = useState(false);
 
   const handleLogin = (email: string) => {
     saveUserSession(email);
@@ -99,9 +110,22 @@ const App: React.FC = () => {
   };
 
   const handleApplyTemplate = (template: string, domain: DomainType) => {
-    setInput(template);
-    setOptions({ domain });
-    notifySuccess('Template applied!');
+    const vars = extractVariables(template);
+    if (vars.length > 0) {
+      setVariableTemplate({ template, domain });
+    } else {
+      setInput(template);
+      setOptions({ domain });
+      notifySuccess('Template applied!');
+    }
+  };
+
+  const handleVariableApply = (result: string) => {
+    if (variableTemplate) {
+      setInput(result);
+      setOptions({ domain: variableTemplate.domain });
+      notifySuccess('Template applied with variables!');
+    }
   };
   
   useKeyboardShortcuts([
@@ -274,6 +298,17 @@ const App: React.FC = () => {
     trackEvent('share_opened');
   }, [enhancedPrompt]);
 
+  const handleABTest = useCallback(() => {
+    setShowABTest(true);
+    trackEvent('ab_test_opened');
+  }, []);
+
+  const handleEvaluate = useCallback(() => {
+    if (!enhancedPrompt) return;
+    setShowEvaluation(true);
+    trackEvent('evaluation_opened');
+  }, [enhancedPrompt]);
+
   const handleRerunPrompt = useCallback((item: HistoryItem) => {
     setInput(item.original);
     setOptions({ domain: item.domain, mode: item.mode });
@@ -293,6 +328,16 @@ const App: React.FC = () => {
     notifySuccess('Prompt duplicated');
     trackEvent('prompt_duplicated', { prompt_id: item.id });
   }, [setInput, resetPrompts]);
+
+  const handleViewVersions = useCallback((item: HistoryItem) => {
+    setVersionItem(item);
+    trackEvent('version_history_opened', { prompt_id: item.id });
+  }, []);
+
+  const handleCompareVersions = useCallback((v1: string, v2: string) => {
+    setCompareVersions({ v1, v2 });
+    setVersionItem(null);
+  }, []);
 
   const handleEditCopy = useCallback(() => {
     setReadOnly(false);
@@ -571,6 +616,8 @@ const App: React.FC = () => {
                options={options}
                onShare={handleShare}
                onChainPrompt={handleChainPrompt}
+               onABTest={handleABTest}
+               onEvaluate={handleEvaluate}
                isLoading={isLoading}
              />
           </div>
@@ -601,6 +648,7 @@ const App: React.FC = () => {
                onRerun={handleRerunPrompt}
                onSaveAsTemplate={handleSaveAsTemplate}
                onDuplicate={handleDuplicatePrompt}
+               onViewVersions={handleViewVersions}
              />
           </div>
 
@@ -716,6 +764,42 @@ const App: React.FC = () => {
             isOpen={showTemplateGallery}
             onClose={() => setShowTemplateGallery(false)}
             onApply={handleApplyTemplate}
+          />
+
+          {versionItem && (
+            <VersionTimeline
+              item={versionItem}
+              onClose={() => setVersionItem(null)}
+              onCompare={handleCompareVersions}
+            />
+          )}
+
+          {compareVersions && (
+            <VersionCompare
+              v1={compareVersions.v1}
+              v2={compareVersions.v2}
+              onClose={() => setCompareVersions(null)}
+            />
+          )}
+
+          {variableTemplate && (
+            <VariableEditor
+              template={variableTemplate.template}
+              onApply={handleVariableApply}
+              onClose={() => setVariableTemplate(null)}
+            />
+          )}
+
+          <ABTestWorkspace
+            isOpen={showABTest}
+            onClose={() => setShowABTest(false)}
+            basePrompt={input}
+          />
+
+          <EvaluationPanel
+            isOpen={showEvaluation}
+            onClose={() => setShowEvaluation(false)}
+            output={enhancedPrompt}
           />
         </main>
       </div>
