@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, ArrowRight, X, Trophy, Rocket } from 'lucide-react';
 
@@ -10,6 +10,35 @@ interface WelcomeModalProps {
 }
 
 export const WelcomeModal: React.FC<WelcomeModalProps> = ({ isOpen, onStartTour, onSkip }) => {
+  const [email, setEmail] = useState('');
+  const [emailError, setEmailError] = useState('');
+
+  const validateEmail = (email: string) => {
+    if (!email.trim()) return 'Email is required';
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return 'Invalid email format';
+    return '';
+  };
+
+  const handleStart = () => {
+    const error = validateEmail(email);
+    if (error) {
+      setEmailError(error);
+      return;
+    }
+    localStorage.setItem('userEmail', email);
+    onStartTour();
+  };
+
+  const handleSkipWithEmail = () => {
+    const error = validateEmail(email);
+    if (error) {
+      setEmailError(error);
+      return;
+    }
+    localStorage.setItem('userEmail', email);
+    onSkip();
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -66,16 +95,37 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({ isOpen, onStartTour,
               </div>
             </div>
 
+            <div className="mb-4">
+              <label htmlFor="onboarding-email" className="block text-xs font-medium text-slate-400 uppercase mb-2">
+                Your Email <span className="text-red-400">*</span>
+              </label>
+              <input
+                id="onboarding-email"
+                type="email"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setEmailError('');
+                }}
+                className={`w-full bg-slate-950 border rounded-lg p-3 text-slate-200 text-sm focus:ring-2 outline-none placeholder-slate-600 ${
+                  emailError ? 'border-red-500 focus:ring-red-500' : 'border-slate-800 focus:ring-indigo-500'
+                }`}
+                placeholder="your.email@example.com"
+                autoFocus
+              />
+              {emailError && <p className="text-xs text-red-400 mt-1">{emailError}</p>}
+            </div>
+
             <div className="flex flex-col gap-3">
               <button
-                onClick={onStartTour}
-                className="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-indigo-900/20"
+                onClick={handleStart}
+                className="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-indigo-900/20 disabled:opacity-50"
               >
                 Take a quick tour
                 <ArrowRight className="w-4 h-4" />
               </button>
               <button
-                onClick={onSkip}
+                onClick={handleSkipWithEmail}
                 className="w-full text-slate-500 hover:text-slate-300 text-xs font-medium py-2"
               >
                 Skip intro and start building

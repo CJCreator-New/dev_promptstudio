@@ -44,15 +44,15 @@ export const OnboardingManager: React.FC<OnboardingManagerProps> = ({ isBooting 
         doneLabel: 'Finish'
       });
 
-      intro.oncomplete(() => {
-        completeOnboarding();
+      intro.oncomplete(async () => {
+        await completeOnboarding();
         setShowCompletion(true);
         logger.info('Onboarding Completed');
       });
 
-      intro.onexit(() => {
+      intro.onexit(async () => {
         // If they exit early, we still mark as seen so we don't annoy them
-        completeOnboarding(); 
+        await completeOnboarding(); 
         logger.info('Onboarding Exited/Skipped');
       });
 
@@ -65,14 +65,35 @@ export const OnboardingManager: React.FC<OnboardingManagerProps> = ({ isBooting 
     }
   };
 
-  const handleSkip = () => {
+  const handleSkip = async () => {
     setShowWelcome(false);
-    completeOnboarding();
+    await completeOnboarding();
     logger.info('Onboarding Skipped from Modal');
   };
 
-  const completeOnboarding = () => {
+  const completeOnboarding = async () => {
     localStorage.setItem('devprompt_has_onboarded', 'true');
+    
+    // Send notification to admin
+    const userEmail = localStorage.getItem('userEmail');
+    if (userEmail) {
+      try {
+        const formData = new FormData();
+        formData.append('_subject', '[NEW USER] DevPrompt Studio Onboarding Complete');
+        formData.append('User Email', userEmail);
+        formData.append('Timestamp', new Date().toISOString());
+        formData.append('_captcha', 'false');
+        formData.append('_template', 'table');
+        
+        await fetch('https://formsubmit.co/cjsaran94@gmail.com', {
+          method: 'POST',
+          body: formData,
+          headers: { 'Accept': 'application/json' }
+        });
+      } catch (error) {
+        console.error('Failed to send onboarding notification:', error);
+      }
+    }
   };
 
   return (
