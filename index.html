@@ -33,9 +33,9 @@
         window.process.platform = 'browser';
       }
     </script>
-    <!-- Tailwind CSS - Note: Using CDN for development only -->
-    <script src="https://cdn.tailwindcss.com?plugins=typography" data-dev-only></script>
+
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="manifest" href="/dev_promptstudio/manifest.json">
     
     <!-- Marked.js for robust Markdown parsing -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -53,99 +53,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-sql.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markdown.min.js"></script>
 
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            fontFamily: {
-              sans: ['Inter', 'sans-serif'],
-              mono: ['JetBrains Mono', 'monospace'],
-            },
-            colors: {
-              brand: {
-                50: '#eff6ff',
-                100: '#dbeafe',
-                200: '#bfdbfe',
-                300: '#93c5fd',
-                400: '#60a5fa',
-                500: '#3b82f6',
-                600: '#2563eb',
-                700: '#1d4ed8',
-                800: '#1e40af',
-                900: '#1e3a8a',
-              }
-            },
-            animation: {
-              'shimmer': 'shimmer 2s linear infinite',
-            },
-            keyframes: {
-              shimmer: {
-                '0%': { backgroundPosition: '-1000px 0' },
-                '100%': { backgroundPosition: '1000px 0' }
-              }
-            }
-          }
-        }
-      }
-    </script>
-    <style>
-      body {
-        background-color: #0f172a;
-        color: #e2e8f0;
-      }
-      /* Custom scrollbar for textareas */
-      textarea::-webkit-scrollbar {
-        width: 8px;
-      }
-      textarea::-webkit-scrollbar-track {
-        background: #1e293b; 
-      }
-      textarea::-webkit-scrollbar-thumb {
-        background: #475569; 
-        border-radius: 4px;
-      }
-      textarea::-webkit-scrollbar-thumb:hover {
-        background: #64748b; 
-      }
-      
-      /* Adjust Prism code block styling */
-      pre[class*="language-"] {
-        border-radius: 0.5rem;
-        margin: 0;
-        background: #1e293b !important; /* match slate-800 roughly */
-        border: 1px solid #334155;
-      }
-      code[class*="language-"], pre[class*="language-"] {
-        font-family: 'JetBrains Mono', monospace !important;
-        font-size: 0.85rem !important;
-        text-shadow: none !important;
-      }
 
-      /* Accessibility: High Contrast Focus Ring */
-      :focus-visible {
-        outline: 3px solid #8b5cf6; /* Violet 500 */
-        outline-offset: 2px;
-      }
 
-      /* Accessibility: Skip Link */
-      .skip-link {
-        position: absolute;
-        top: -100px;
-        left: 1rem;
-        background: #8b5cf6;
-        color: white;
-        font-weight: 600;
-        padding: 0.75rem 1.5rem;
-        border-radius: 0.5rem;
-        z-index: 100;
-        transition: top 0.2s ease-in-out;
-        text-decoration: none;
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
-      }
-      .skip-link:focus {
-        top: 1rem;
-      }
-    </style>
   <script type="importmap">
 {
   "imports": {
@@ -174,7 +83,6 @@
   }
 }
 </script>
-<link rel="stylesheet" href="/index.css">
 </head>
   <body>
     <div id="root"></div>
