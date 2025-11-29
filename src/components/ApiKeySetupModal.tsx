@@ -37,8 +37,8 @@ export const ApiKeySetupModal: React.FC<ApiKeySetupModalProps> = ({ isOpen, onCl
   };
 
   return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-      <div className="bg-slate-900 border border-slate-700 rounded-xl shadow-2xl w-full max-w-md">
+    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="bg-slate-900 border border-slate-700 rounded-xl shadow-2xl w-full max-w-md mx-4 animate-in zoom-in-95 duration-200">
         <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
           <h3 className="text-lg font-semibold text-white flex items-center gap-2">
             <Key className="w-5 h-5 text-blue-400" />

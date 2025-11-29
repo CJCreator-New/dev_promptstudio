@@ -1,9 +1,14 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { BarChart3, Clock, Zap, TrendingUp } from 'lucide-react';
 import { useDataStore } from '../store';
 
 export const UsageStats: React.FC = () => {
   const { history } = useDataStore();
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    setTimeout(() => setIsLoading(false), 500);
+  }, []);
 
   const stats = useMemo(() => {
     const total = history.length;
@@ -14,6 +19,19 @@ export const UsageStats: React.FC = () => {
 
     return { total, last24h, avgLength };
   }, [history]);
+
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        {[1, 2, 3, 4].map(i => (
+          <div key={i} className="bg-slate-800 border border-slate-700 rounded-lg p-4 animate-pulse">
+            <div className="h-4 bg-slate-700 rounded w-20 mb-2" />
+            <div className="h-8 bg-slate-700 rounded w-16" />
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">

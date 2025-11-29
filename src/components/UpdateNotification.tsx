@@ -19,7 +19,7 @@ export const UpdateNotification: React.FC = () => {
   };
 
   return (
-    <div className="fixed bottom-4 right-4 z-[100] bg-blue-600 text-white rounded-lg shadow-lg p-4 max-w-sm animate-in slide-in-from-bottom">
+    <div className="fixed bottom-4 right-4 left-4 sm:left-auto z-[100] bg-blue-600 text-white rounded-lg shadow-lg p-4 max-w-sm animate-in slide-in-from-bottom">
       <div className="flex items-start gap-3">
         <RefreshCw className="w-5 h-5 flex-shrink-0 mt-0.5" />
         <div className="flex-1">
