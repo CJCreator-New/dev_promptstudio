@@ -18,13 +18,15 @@ export const ApiKeyManager: React.FC = () => {
     updateKeyStatus(provider, 'loading');
     
     try {
-      const isValid = await verifyApiKey(provider, value);
-      updateKeyStatus(provider, isValid ? 'verified' : 'invalid');
+      const result = await verifyApiKey(provider, value);
+      updateKeyStatus(provider, result.valid ? 'verified' : 'invalid');
       
-      if (isValid) {
+      if (result.valid) {
         notifySuccess(`${PROVIDER_CONFIGS[provider].label} API key verified`);
+      } else if (result.rateLimited) {
+        notifyError(`Rate limited. Please wait before verifying again.`);
       } else {
-        notifyError(`${PROVIDER_CONFIGS[provider].label} API key verification failed`);
+        notifyError(result.error || `${PROVIDER_CONFIGS[provider].label} API key verification failed`);
       }
     } catch (error) {
       updateKeyStatus(provider, 'invalid');
@@ -52,13 +54,24 @@ export const ApiKeyManager: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4 mb-6 flex gap-3">
-          <Shield className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
-          <div className="text-sm text-blue-200">
-            <p className="font-medium mb-1">Security Notice</p>
-            <p className="text-blue-300/80">
-              Your API keys are encrypted and stored locally in your browser. They never leave your device except when making requests to the respective LLM providers.
-            </p>
+        <div className="space-y-3 mb-6">
+          <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4 flex gap-3">
+            <Shield className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
+            <div className="text-sm text-blue-200">
+              <p className="font-medium mb-1">Security Notice</p>
+              <p className="text-blue-300/80">
+                Your API keys are encrypted and stored locally in your browser. They never leave your device except when making requests to the respective LLM providers.
+              </p>
+            </div>
+          </div>
+          <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-4 flex gap-3">
+            <span className="text-amber-400 flex-shrink-0 mt-0.5">⚡</span>
+            <div className="text-sm text-amber-200">
+              <p className="font-medium mb-1">Rate Limiting</p>
+              <p className="text-amber-300/80">
+                Verification requests are rate-limited (2 seconds between checks) and cached for 5 minutes to prevent API quota issues.
+              </p>
+            </div>
           </div>
         </div>
 

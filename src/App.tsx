@@ -1,9 +1,7 @@
-import React, { useEffect, useState, Suspense, lazy, useMemo, useCallback } from 'react';
+import React, { useEffect, useState, Suspense, lazy, useCallback } from 'react';
 import Header from './components/Header';
 import PromptInput from './components/PromptInput';
-import EnhancedPromptInput from './components/EnhancedPromptInput';
 import PromptOutput from './components/PromptOutput';
-import { enhancePromptStream } from './services/geminiService';
 import { enhancePromptWithKey } from './services/enhancementService';
 import { HistoryItem, SavedProject, CustomTemplate, DomainType, GenerationMode } from './types';
 import { generateShareLink, parseShareParam } from './utils/shareUtils';
@@ -251,8 +249,8 @@ const App: React.FC = () => {
     if (window.confirm("Load this project? Current unsaved work will be replaced.")) {
       setInput(project.input);
       setOptions({
-        targetTool: 'general',
-        ...project.options
+        ...project.options,
+        targetTool: project.options.targetTool || 'general'
       });
       resetPrompts();
       setMobileHistoryOpen(false);
@@ -309,7 +307,7 @@ const App: React.FC = () => {
         id: crypto.randomUUID(),
         name: templateFormData.name,
         text: templateFormData.text,
-        domain: templateFormData.domain,
+        domain: templateFormData.domain as DomainType,
         timestamp: Date.now()
       };
       addCustomTemplate(newTemplate);
@@ -366,10 +364,12 @@ const App: React.FC = () => {
   
   const handleLoadRandomExample = () => {
     const randomExample = EXAMPLE_PROMPTS[Math.floor(Math.random() * EXAMPLE_PROMPTS.length)];
-    setInput(randomExample.text);
-    setOptions({ domain: randomExample.domain });
-    setMobileHistoryOpen(false);
-    notifySuccess(`Loaded example: ${randomExample.label}`);
+    if (randomExample) {
+      setInput(randomExample.text);
+      setOptions({ domain: randomExample.domain });
+      setMobileHistoryOpen(false);
+      notifySuccess(`Loaded example: ${randomExample.label}`);
+    }
   };
 
   const handleStartProject = () => {

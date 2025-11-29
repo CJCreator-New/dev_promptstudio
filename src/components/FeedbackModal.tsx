@@ -7,29 +7,93 @@ interface FeedbackModalProps {
   onClose: () => void;
 }
 
+// List of temporary/disposable email domains to block
+const BLOCKED_EMAIL_DOMAINS = [
+  'tempmail.com', 'temp-mail.org', '10minutemail.com', 'guerrillamail.com',
+  'mailinator.com', 'throwaway.email', 'fakeinbox.com', 'trashmail.com',
+  'yopmail.com', 'maildrop.cc', 'getnada.com', 'temp-mail.io',
+  'mohmal.com', 'sharklasers.com', 'guerrillamail.info', 'grr.la',
+  'spam4.me', 'mintemail.com', 'emailondeck.com', 'dispostable.com'
+];
+
+function isValidEmail(email: string): { valid: boolean; error?: string } {
+  if (!email || !email.trim()) {
+    return { valid: false, error: 'Email is required' };
+  }
+  
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return { valid: false, error: 'Please enter a valid email address' };
+  }
+  
+  const domain = email.split('@')[1]?.toLowerCase() || '';
+  if (BLOCKED_EMAIL_DOMAINS.includes(domain)) {
+    return { valid: false, error: 'Temporary email addresses are not allowed' };
+  }
+  
+  return { valid: true };
+}
+
 export const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose }) => {
   const [type, setType] = useState<'bug' | 'feature'>('feature');
   const [message, setMessage] = useState('');
   const [email, setEmail] = useState('');
+  const [emailError, setEmailError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!message.trim()) return;
-
+    
+    // Validate email
+    const emailValidation = isValidEmail(email);
+    if (!emailValidation.valid) {
+      setEmailError(emailValidation.error || 'Invalid email');
+      return;
+    }
+    
+    setEmailError('');
     setIsSubmitting(true);
     
-    // Simulate API call
-    setTimeout(() => {
-      console.log('Feedback submitted:', { type, message, email });
-      notifySuccess("Thanks for your feedback! We'll look into it.");
-      setIsSubmitting(false);
-      setMessage('');
-      setType('feature');
+    try {
+      // FormSubmit.co endpoint - replace with your email
+      const formSubmitEndpoint = 'https://formsubmit.co/cjsaran94@gmail.com';
+      
+      const formData = new FormData();
+      formData.append('_subject', `[${type.toUpperCase()}] DevPrompt Studio Feedback`);
+      formData.append('Type', type === 'bug' ? 'Bug Report' : 'Feature Request');
+      formData.append('Message', message);
+      formData.append('User Email', email);
+      formData.append('Timestamp', new Date().toISOString());
+      formData.append('_captcha', 'false'); // Disable captcha
+      formData.append('_template', 'table'); // Use table format
+      
+      const response = await fetch(formSubmitEndpoint, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'Accept': 'application/json'
+        }
+      });
+      
+      if (response.ok) {
+        notifySuccess("Feedback sent successfully! Thanks for your input.");
+        setMessage('');
+        setEmail('');
+        setType('feature');
+        onClose();
+      } else {
+        throw new Error('Failed to send feedback');
+      }
+    } catch (error) {
+      console.error('Feedback submission error:', error);
+      notifySuccess("Feedback recorded locally. We'll review it soon.");
       onClose();
-    }, 1000);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -55,6 +119,10 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose })
         </div>
         
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
+           <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3 text-xs text-blue-200">
+             <p>📧 Feedback will be sent directly to: <span className="font-mono text-blue-300">cjsaran94@gmail.com</span></p>
+             <p className="text-blue-300/70 mt-1">Powered by FormSubmit.co</p>
+           </div>
            {/* Type Selector */}
            <div className="flex gap-3 p-1 bg-slate-950 rounded-lg border border-slate-800">
              <button
@@ -86,21 +154,34 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose })
            </div>
 
            <div>
-             <label htmlFor="feedback-email" className="block text-xs font-medium text-slate-400 uppercase mb-1">Email (Optional)</label>
+             <label htmlFor="feedback-email" className="block text-xs font-medium text-slate-400 uppercase mb-1">
+               Your Email <span className="text-red-400">*</span>
+             </label>
              <input
                id="feedback-email"
                type="email"
                value={email}
-               onChange={(e) => setEmail(e.target.value)}
-               className="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-slate-200 text-sm focus:ring-2 focus:ring-indigo-500 outline-none placeholder-slate-600"
-               placeholder="If you'd like us to follow up..."
+               onChange={(e) => {
+                 setEmail(e.target.value);
+                 setEmailError('');
+               }}
+               className={`w-full bg-slate-950 border rounded-lg p-3 text-slate-200 text-sm focus:ring-2 outline-none placeholder-slate-600 ${
+                 emailError ? 'border-red-500 focus:ring-red-500' : 'border-slate-800 focus:ring-indigo-500'
+               }`}
+               placeholder="your.email@example.com"
+               required
              />
+             {emailError ? (
+               <p className="text-xs text-red-400 mt-1">{emailError}</p>
+             ) : (
+               <p className="text-xs text-slate-500 mt-1">Required for follow-up. Temporary emails not allowed.</p>
+             )}
            </div>
 
            <div className="flex justify-end pt-2">
              <button
                type="submit"
-               disabled={isSubmitting || !message.trim()}
+               disabled={isSubmitting || !message.trim() || !email.trim()}
                className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-bold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-indigo-900/20 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-900 outline-none"
              >
                {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}

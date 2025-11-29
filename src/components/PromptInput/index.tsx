@@ -234,17 +234,36 @@ const PromptInput: React.FC<PromptInputProps> = ({
 
       {/* Input Area */}
       <div className="flex-1 px-6 pb-6 flex flex-col gap-3">
-        <Textarea
-          id="main-input"
-          label={options.mode === GenerationMode.OUTLINE ? 'Rough Topic or Idea' : 'Your Rough Idea'}
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder={options.mode === GenerationMode.OUTLINE ? "e.g., A comprehensive project plan for migrating a monolith to microservices..." : "e.g., I want a react login form with validation and a nice dark mode design..."}
-          readOnly={readOnly || isBooting}
-          error={validationError || undefined}
-          characterCount
-          className="flex-1"
-        />
+        <div className="flex-1 flex flex-col">
+          <div className="flex items-center justify-between mb-2">
+            <label htmlFor="main-input" className="text-xs font-medium text-slate-200 uppercase tracking-wider flex items-center gap-2">
+              {options.mode === GenerationMode.OUTLINE ? '📋 Rough Topic or Idea' : '💡 Your Rough Idea'}
+            </label>
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-slate-400">{input.length} chars • ~{Math.ceil(input.length / 4)} tokens</span>
+              {input.length > 0 && !readOnly && (
+                <button
+                  onClick={() => setInput('')}
+                  className="text-xs text-slate-400 hover:text-red-400 transition-colors px-2 py-1 rounded hover:bg-slate-700"
+                  title="Clear input"
+                >
+                  Clear
+                </button>
+              )}
+            </div>
+          </div>
+          <Textarea
+            id="main-input"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder={options.mode === GenerationMode.OUTLINE 
+              ? "📝 Describe your project, feature, or concept...\n\nExample: A comprehensive project plan for migrating a monolith to microservices with zero downtime" 
+              : "✨ Describe what you want to build...\n\nExample: I want a react login form with email validation, password strength indicator, and a sleek dark mode design"}
+            readOnly={readOnly || isBooting}
+            error={validationError || undefined}
+            className="flex-1"
+          />
+        </div>
 
         {!readOnly && (
           isBooting ? (
@@ -268,8 +287,8 @@ const PromptInput: React.FC<PromptInputProps> = ({
               ${isLoading || !input.trim() || isBooting || !!validationError
                 ? 'bg-secondary text-muted cursor-not-allowed' 
                 : options.useThinking
-                  ? 'gradient-thinking hover:shadow-purple-500/25'
-                  : 'gradient-primary hover:shadow-indigo-500/25'}
+                  ? 'gradient-thinking hover:shadow-purple-500/25 hover:scale-[1.02]'
+                  : 'gradient-primary hover:shadow-blue-500/25 hover:scale-[1.02]'}
               active:scale-[0.99]
             `}
           >
