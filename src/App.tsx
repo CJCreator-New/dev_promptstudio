@@ -33,6 +33,7 @@ import { extractVariables } from './utils/variableInterpolation';
 import { isUserLoggedIn, saveUserSession } from './utils/auth';
 import { useUIStore, useAppStore, useDataStore } from './store';
 import { trackEvent } from './utils/analytics';
+import { KeyProvider } from './types/apiKeys';
 
 // Lazy load components
 const FeedbackModal = lazy(() => import('./components/FeedbackModal').then(m => ({ default: m.FeedbackModal })));
@@ -102,6 +103,7 @@ const App: React.FC = () => {
   const [variableTemplate, setVariableTemplate] = useState<{ template: string; domain: DomainType } | null>(null);
   const [showABTest, setShowABTest] = useState(false);
   const [showEvaluation, setShowEvaluation] = useState(false);
+  const [selectedProvider, setSelectedProvider] = useState<KeyProvider>('gemini');
 
   const handleLogin = (email: string) => {
     saveUserSession(email);
@@ -231,7 +233,7 @@ const App: React.FC = () => {
 
     const enhancePromise = withRetry(async () => {
         let accumulatedText = "";
-        const stream = enhancePromptWithKey(input, options, 'gemini');
+        const stream = enhancePromptWithKey(input, options, selectedProvider);
         
         for await (const chunk of stream) {
             accumulatedText += chunk;
@@ -282,7 +284,7 @@ const App: React.FC = () => {
       .finally(() => {
           setLoading(false);
       });
-  }, [input, options, setLoading, setOriginalPrompt, setEnhancedPrompt, addHistoryItem, setLiveMessage]);
+  }, [input, options, selectedProvider, setLoading, setOriginalPrompt, setEnhancedPrompt, addHistoryItem, setLiveMessage]);
 
   const handleChainPrompt = useCallback((output: string) => {
     setInput(output);
@@ -606,6 +608,8 @@ const App: React.FC = () => {
               readOnly={isReadOnly}
               saveStatus={saveStatus}
               lastSaved={lastSaved}
+              provider={selectedProvider}
+              onProviderChange={setSelectedProvider}
             />
           </div>
 

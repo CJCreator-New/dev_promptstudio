@@ -16,6 +16,8 @@ import { usePromptSuggestions } from '../../hooks/usePromptSuggestions';
 import { useValidation } from '../../hooks/useValidation';
 import { RecipeDropdown } from '../RecipeDropdown';
 import { PromptRecipe } from '../../utils/promptRecipes';
+import { KeyProvider } from '../../types/apiKeys';
+import { useApiKeyStore } from '../../store/useApiKeyStore';
 
 interface PromptInputProps {
   input: string;
@@ -30,6 +32,8 @@ interface PromptInputProps {
   readOnly?: boolean;
   saveStatus?: 'idle' | 'saving' | 'saved' | 'error';
   lastSaved?: number | null;
+  provider?: KeyProvider;
+  onProviderChange?: (provider: KeyProvider) => void;
 }
 
 const PromptInput: React.FC<PromptInputProps> = ({ 
@@ -44,8 +48,11 @@ const PromptInput: React.FC<PromptInputProps> = ({
   isBooting = false,
   readOnly = false,
   saveStatus = 'idle',
-  lastSaved = null
+  lastSaved = null,
+  provider = 'gemini',
+  onProviderChange
 }) => {
+  const { keys } = useApiKeyStore();
   const validationError = useValidation(input, isBooting, readOnly);
   const suggestions = usePromptSuggestions(input, options.domain, isBooting);
 
@@ -114,6 +121,20 @@ const PromptInput: React.FC<PromptInputProps> = ({
         <div className="flex items-center gap-2 shrink-0">
           {!readOnly && !isBooting && (
             <>
+              {onProviderChange && (
+                <select
+                  value={provider}
+                  onChange={(e) => onProviderChange(e.target.value as KeyProvider)}
+                  className="text-xs bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-slate-300 focus:ring-2 focus:ring-blue-500 outline-none"
+                  title="Select AI Provider"
+                >
+                  <option value="gemini" disabled={!keys.gemini?.value}>Gemini {keys.gemini?.status === 'verified' ? '✓' : ''}</option>
+                  <option value="openai" disabled={!keys.openai?.value}>OpenAI {keys.openai?.status === 'verified' ? '✓' : ''}</option>
+                  <option value="claude" disabled={!keys.claude?.value}>Claude {keys.claude?.status === 'verified' ? '✓' : ''}</option>
+                  <option value="openrouter" disabled={!keys.openrouter?.value}>OpenRouter {keys.openrouter?.status === 'verified' ? '✓' : ''}</option>
+                </select>
+              )}
+              
               <RecipeDropdown onSelect={handleRecipeSelect} />
               
               <button 
