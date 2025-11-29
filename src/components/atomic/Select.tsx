@@ -43,7 +43,7 @@ export const Select: React.FC<SelectProps> = React.memo(({
       <div className="relative">
         <select
           id={selectId}
-          className={selectClasses}
+          className={`${selectClasses} [&>option]:py-2`}
           aria-invalid={!!error}
           aria-describedby={[errorId, helperId].filter(Boolean).join(' ') || undefined}
           style={{ colorScheme: 'dark' }}
