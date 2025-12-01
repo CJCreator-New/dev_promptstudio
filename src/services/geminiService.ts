@@ -304,19 +304,16 @@ export const enhancePromptStream = async function* (
       });
     });
 
-    for await (const chunk of stream) {
-      if (chunk.text) {
-        // Apply response interceptors
-        const interceptedChunk = applyResponseInterceptors({ text: chunk.text, timestamp: Date.now() });
-        yield interceptedChunk.text;
-        
-        // Non-blocking metric updates
-        if ('requestIdleCallback' in window) {
-          requestIdleCallback(() => {
-            logger.debug('Chunk received', { length: chunk.text.length });
-          }, { timeout: 2000 });
+    try {
+      for await (const chunk of stream) {
+        if (chunk.text) {
+          const interceptedChunk = applyResponseInterceptors({ text: chunk.text, timestamp: Date.now() });
+          yield interceptedChunk.text;
         }
       }
+    } catch (streamError: any) {
+      console.error('Stream error:', streamError);
+      throw new Error(`Streaming failed: ${streamError.message || 'Unknown error'}`);
     }
 
   } catch (error: any) {

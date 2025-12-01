@@ -25,25 +25,31 @@ export async function* openRouterStream(
 
   if (!response.ok) throw new Error(`OpenRouter API error: ${response.status}`);
 
-  const reader = response.body?.getReader();
+  if (!response.body) throw new Error('No response body');
+  
+  const reader = response.body.getReader();
   const decoder = new TextDecoder();
 
-  while (true) {
-    const { done, value } = await reader!.read();
-    if (done) break;
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
 
-    const chunk = decoder.decode(value);
-    const lines = chunk.split('\n').filter(line => line.trim().startsWith('data:'));
+      const chunk = decoder.decode(value);
+      const lines = chunk.split('\n').filter(line => line.trim().startsWith('data:'));
 
-    for (const line of lines) {
-      const data = line.replace('data: ', '');
-      if (data === '[DONE]') return;
+      for (const line of lines) {
+        const data = line.replace('data: ', '');
+        if (data === '[DONE]') return;
 
-      try {
-        const parsed = JSON.parse(data);
-        const content = parsed.choices?.[0]?.delta?.content;
-        if (content) yield content;
-      } catch {}
+        try {
+          const parsed = JSON.parse(data);
+          const content = parsed.choices?.[0]?.delta?.content;
+          if (content) yield content;
+        } catch {}
+      }
     }
+  } finally {
+    reader.releaseLock();
   }
 }
