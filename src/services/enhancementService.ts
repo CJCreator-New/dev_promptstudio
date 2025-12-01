@@ -1,3 +1,4 @@
+import { useApiConfigStore } from '../store/apiConfigStore';
 import { useApiKeyStore } from '../store/useApiKeyStore';
 import { KeyProvider } from '../types/apiKeys';
 import { EnhancementOptions } from '../types';
@@ -24,24 +25,33 @@ export async function* enhancePromptWithKey(
   }
   
   let fullResponse = '';
-  const store = useApiKeyStore.getState();
-  const userKey = store.keys[provider];
+  const newStore = useApiConfigStore.getState();
+  const oldStore = useApiKeyStore.getState();
   
-  const apiKey = (userKey && userKey.status === 'verified') 
-    ? userKey.value 
-    : (provider === 'gemini' ? process.env.API_KEY : undefined);
+  console.log('🔍 DEBUG: Checking stores...');
+  console.log('New store providers:', newStore.providers[provider]);
+  console.log('Old store keys:', oldStore.keys[provider]);
+  
+  let apiKey = newStore.getActiveApiKey(provider);
+  let model = newStore.providers[provider]?.activeModelId;
+  
+  console.log('🔍 New store key:', apiKey ? 'Found' : 'Not found');
   
   if (!apiKey) {
-    throw new Error(`${provider} API Key is missing. Please add your API key in Settings.`);
+    apiKey = oldStore.getKey(provider);
+    model = oldStore.getModel(provider);
+    console.log('🔍 Old store key:', apiKey ? 'Found' : 'Not found');
   }
   
-  console.log(`🔑 Using ${userKey?.status === 'verified' ? 'user' : 'default'} ${provider} key`);
-  console.log('📋 Provider:', provider, 'Key status:', userKey?.status, 'Key exists:', !!apiKey);
+  if (!apiKey) {
+    throw new Error(`${provider} API Key is missing. Please add and verify your API key in Settings.`);
+  }
+  
+  console.log(`🔑 Using ${provider} key (length: ${apiKey.length})`);
+  console.log('📋 Provider:', provider, 'Key exists:', !!apiKey);
+  console.log('🎯 Selected model:', model);
   
   let stream: AsyncGenerator<string, void, unknown>;
-  
-  const model = store.getModel(provider);
-  console.log('🎯 Selected model:', model);
   
   switch (provider) {
     case 'openrouter':

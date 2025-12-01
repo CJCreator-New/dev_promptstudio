@@ -1,42 +1,64 @@
 import React from 'react';
 import { Key, Shield } from 'lucide-react';
 import { useApiKeyStore } from '../../store/useApiKeyStore';
+import { useApiConfigStore, ProviderId } from '../../store/apiConfigStore';
 import { PROVIDER_CONFIGS, KeyProvider } from '../../types/apiKeys';
 import { ApiKeyInputRow } from './ApiKeyInputRow';
-import { verifyApiKey } from '../../services/llm/verificationService';
+import { verifyApiKey as verifyOldKey } from '../../services/llm/verificationService';
+import { verifyApiKey } from '../../services/apiKeyVerification';
 import { notifySuccess, notifyError } from '../ToastSystem';
 
 export const ApiKeyManager: React.FC = () => {
-  const { keys, models, setKey, setModel, updateKeyStatus, deleteKey } = useApiKeyStore();
+  const oldStore = useApiKeyStore();
+  const { upsertModelConfig, updateVerificationStatus, removeModelConfig } = useApiConfigStore();
 
-  const handleSave = (provider: KeyProvider, value: string, model?: string) => {
-    setKey(provider, value, model);
+  const handleSave = async (provider: KeyProvider, value: string, model?: string) => {
+    const modelId = model || oldStore.models[provider];
+    
+    console.log('💾 Saving key for', provider, 'model:', modelId, 'key length:', value.length);
+    
+    upsertModelConfig(provider as ProviderId, {
+      modelId,
+      label: modelId,
+      apiKey: value,
+      isVerified: false,
+      isDefault: true
+    });
+    
+    oldStore.setKey(provider, value, model);
+    
+    console.log('✅ Key saved to both stores');
     notifySuccess(`${PROVIDER_CONFIGS[provider].label} API key saved`);
+    
+    await handleVerify(provider, value, modelId);
   };
 
-  const handleVerify = async (provider: KeyProvider, value: string) => {
-    updateKeyStatus(provider, 'loading');
+  const handleVerify = async (provider: KeyProvider, value: string, modelId?: string) => {
+    oldStore.updateKeyStatus(provider, 'loading');
     
     try {
-      const result = await verifyApiKey(provider, value);
-      updateKeyStatus(provider, result.valid ? 'verified' : 'invalid');
+      const result = await verifyApiKey(provider as ProviderId, value);
+      const model = modelId || oldStore.models[provider];
+      
+      updateVerificationStatus(provider as ProviderId, model, result.valid, result.error);
+      oldStore.updateKeyStatus(provider, result.valid ? 'verified' : 'invalid');
       
       if (result.valid) {
         notifySuccess(`${PROVIDER_CONFIGS[provider].label} API key verified`);
-      } else if (result.rateLimited) {
-        notifyError(`Rate limited. Please wait before verifying again.`);
       } else {
         notifyError(result.error || `${PROVIDER_CONFIGS[provider].label} API key verification failed`);
       }
     } catch (error) {
-      updateKeyStatus(provider, 'invalid');
+      oldStore.updateKeyStatus(provider, 'invalid');
       notifyError('Verification failed. Please check your connection.');
     }
   };
 
   const handleDelete = (provider: KeyProvider) => {
     if (window.confirm(`Delete ${PROVIDER_CONFIGS[provider].label} API key?`)) {
-      deleteKey(provider);
+      const model = oldStore.models[provider];
+      removeModelConfig(provider as ProviderId, model);
+      oldStore.deleteKey(provider);
       notifySuccess(`${PROVIDER_CONFIGS[provider].label} API key deleted`);
     }
   };
@@ -81,13 +103,13 @@ export const ApiKeyManager: React.FC = () => {
               key={provider}
               provider={provider}
               config={PROVIDER_CONFIGS[provider]}
-              value={keys[provider]?.value || ''}
-              model={models[provider]}
-              status={keys[provider]?.status || 'unverified'}
+              value={oldStore.keys[provider]?.value || ''}
+              model={oldStore.models[provider]}
+              status={oldStore.keys[provider]?.status || 'unverified'}
               onSave={handleSave}
-              onModelChange={setModel}
+              onModelChange={oldStore.setModel}
               onDelete={handleDelete}
-              onVerify={handleVerify}
+              onVerify={(p, v) => handleVerify(p, v)}
             />
           ))}
         </div>

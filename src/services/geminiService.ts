@@ -94,7 +94,7 @@ The enhanced prompt you generate should generally follow this structure (adapted
  * @returns Promise resolving to operation result
  * @throws Error if all retries exhausted or non-retryable error
  */
-async function retryOperation<T>(
+export async function retryOperation<T>(
   operation: () => Promise<T>,
   retries: number = MAX_RETRIES,
   delay: number = INITIAL_RETRY_DELAY,
@@ -103,7 +103,6 @@ async function retryOperation<T>(
   try {
     return await operation();
   } catch (error: any) {
-    // Apply error interceptors
     const processedError = applyErrorInterceptors(error);
     
     const status = processedError.status || processedError.response?.status;
@@ -277,7 +276,7 @@ export const enhancePromptStream = async function* (
     Please generate the output now.
   `;
 
-  const modelName = options.useThinking ? 'gemini-2.0-flash-thinking-exp-01-21' : 'gemini-2.0-flash-exp';
+  const modelName = options.useThinking ? 'gemini-2.0-flash-thinking-exp-01-21' : 'gemini-1.5-flash-8b';
   
   const requestConfig: any = {
     systemInstruction: SYSTEM_INSTRUCTION,
@@ -331,9 +330,13 @@ export const enhancePromptStream = async function* (
     if (status) {
       switch (status) {
         case 400:
+          const errorMsg = error.message || '';
+          if (errorMsg.includes('expired') || errorMsg.includes('API_KEY_INVALID')) {
+            throw new APIError("Your Gemini API key has expired. Please create a new key at https://aistudio.google.com/apikey", 400);
+          }
           throw new APIError("Invalid Request (400): The input or configuration is invalid.", 400);
         case 401:
-          throw new APIError("Unauthorized (401): API Key is invalid or expired.", 401);
+          throw new APIError("Unauthorized (401): API Key is invalid or expired. Get a new key at https://aistudio.google.com/apikey", 401);
         case 403:
           throw new APIError("Forbidden (403): You do not have permission to access this resource.", 403);
         case 404:

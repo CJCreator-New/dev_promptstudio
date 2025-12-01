@@ -6,7 +6,10 @@
   "display": "standalone",
   "background_color": "#0f172a",
   "theme_color": "#3b82f6",
-  "orientation": "portrait-primary",
+  "orientation": "any",
+  "scope": "/dev_promptstudio/",
+  "categories": ["productivity", "developer-tools", "ai"],
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "/dev_promptstudio/icon-192.png",
@@ -19,6 +22,23 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "New Prompt",
+      "short_name": "New",
+      "description": "Create a new prompt",
+      "url": "/dev_promptstudio/?action=new",
+      "icons": [{ "src": "/dev_promptstudio/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Test Suite",
+      "short_name": "Test",
+      "description": "Run prompt tests",
+      "url": "/dev_promptstudio/?action=test",
+      "icons": [{ "src": "/dev_promptstudio/icon-192.png", "sizes": "192x192" }]
     }
   ]
 }

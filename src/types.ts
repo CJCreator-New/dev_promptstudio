@@ -4,7 +4,9 @@ export enum DomainType {
   UI_UX = 'UI/UX Design',
   DEVOPS = 'DevOps & Infrastructure',
   MOBILE = 'Mobile App Development',
-  FULLSTACK = 'Full Stack'
+  FULLSTACK = 'Full Stack',
+  AI_AGENTS = 'AI Agent Builders',
+  GENERAL = 'General'
 }
 
 export enum PlatformType {

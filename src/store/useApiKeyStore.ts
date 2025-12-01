@@ -43,9 +43,9 @@ export const useApiKeyStore = create<ApiKeyState>()(
       },
       models: {
         openai: 'gpt-4o',
-        gemini: 'gemini-2.0-flash-exp',
+        gemini: 'gemini-1.5-flash',
         claude: 'claude-3-5-sonnet-20241022',
-        openrouter: 'google/gemini-2.0-flash-exp:free',
+        openrouter: 'tng/r1t-chimera:free',
       },
       setKey: (provider, value, model) => set((state) => ({
         keys: { 

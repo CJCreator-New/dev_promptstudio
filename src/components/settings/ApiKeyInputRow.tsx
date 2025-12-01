@@ -14,14 +14,9 @@ interface ApiKeyInputRowProps {
   onVerify: (provider: KeyProvider, value: string) => void;
 }
 
-const OPENROUTER_MODELS = [
-  { value: 'google/gemini-2.0-flash-exp:free', label: 'Gemini 2.0 Flash (Free)' },
-  { value: 'meta-llama/llama-3.2-3b-instruct:free', label: 'Llama 3.2 3B (Free)' },
-  { value: 'microsoft/phi-3-mini-128k-instruct:free', label: 'Phi-3 Mini (Free)' },
-  { value: 'google/gemma-2-9b-it:free', label: 'Gemma 2 9B (Free)' },
-  { value: 'anthropic/claude-3.5-sonnet', label: 'Claude 3.5 Sonnet (Paid)' },
-  { value: 'openai/gpt-4o', label: 'GPT-4o (Paid)' },
-];
+import { FREE_OPENROUTER_MODELS } from '../../utils/openRouterModels';
+
+const OPENROUTER_MODELS = FREE_OPENROUTER_MODELS.map(m => ({ value: m.id, label: m.label }));
 
 export const ApiKeyInputRow: React.FC<ApiKeyInputRowProps> = ({
   provider,
