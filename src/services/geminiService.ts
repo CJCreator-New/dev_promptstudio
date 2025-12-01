@@ -337,11 +337,11 @@ export const enhancePromptStream = async function* (
         case 404:
           throw new APIError(`Model Not Found (404): The model '${modelName}' is not available.`, 404);
         case 429:
-          throw new RateLimitError("Too Many Requests (429): Quota exceeded. Please wait a moment.");
+          throw new RateLimitError("Rate limit exceeded. Switch to another provider (OpenAI/Claude/OpenRouter) or wait 1-2 minutes.");
         case 500:
           throw new APIError("Internal Server Error (500): Google's AI service is having trouble.", 500);
         case 503:
-          throw new APIError("Service Unavailable (503): The model is currently overloaded. Try again later.", 503);
+          throw new APIError("Service overloaded. Try switching providers or wait a moment.", 503);
         default:
           throw new APIError(`API Error (${status}): An unexpected error occurred.`, status);
       }

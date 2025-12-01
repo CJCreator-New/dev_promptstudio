@@ -274,7 +274,7 @@ const App: React.FC = () => {
          const userMessage = formatErrorMessage(error);
          
          if (error.name === 'RateLimitError' || error.message.includes("429")) {
-             showErrorWithRetry(userMessage, handleEnhance);
+             notifyError('Rate limit exceeded. Try switching to a different AI provider or wait a few minutes.');
          } else if (error.name === 'APIError' || error.message.includes("500") || error.message.includes("503")) {
              showErrorWithRetry(userMessage, handleEnhance);
          } else {
