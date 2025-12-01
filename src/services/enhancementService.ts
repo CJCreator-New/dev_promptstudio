@@ -36,10 +36,12 @@ export async function* enhancePromptWithKey(
   }
   
   console.log(`🔑 Using ${userKey?.status === 'verified' ? 'user' : 'default'} ${provider} key`);
+  console.log('📋 Provider:', provider, 'Key status:', userKey?.status, 'Key exists:', !!apiKey);
   
   let stream: AsyncGenerator<string, void, unknown>;
   
   const model = store.getModel(provider);
+  console.log('🎯 Selected model:', model);
   
   switch (provider) {
     case 'openrouter':

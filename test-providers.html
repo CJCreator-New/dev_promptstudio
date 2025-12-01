@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Providers</title>
+</head>
+<body>
+    <h1>Test AI Providers</h1>
+    
+    <div>
+        <h2>OpenRouter (Free Gemini)</h2>
+        <input type="text" id="openrouter-key" placeholder="OpenRouter API Key" style="width: 400px">
+        <button onclick="testOpenRouter()">Test</button>
+        <pre id="openrouter-result"></pre>
+    </div>
+
+    <script>
+    async function testOpenRouter() {
+        const key = document.getElementById('openrouter-key').value;
+        const result = document.getElementById('openrouter-result');
+        result.textContent = 'Testing...';
+        
+        try {
+            const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${key}`,
+                    'Content-Type': 'application/json',
+                    'HTTP-Referer': window.location.origin,
+                },
+                body: JSON.stringify({
+                    model: 'google/gemini-2.0-flash-exp:free',
+                    messages: [{ role: 'user', content: 'Say hello' }],
+                    stream: false,
+                }),
+            });
+            
+            const data = await response.json();
+            result.textContent = JSON.stringify(data, null, 2);
+        } catch (error) {
+            result.textContent = 'Error: ' + error.message;
+        }
+    }
+    </script>
+</body>
+</html>
