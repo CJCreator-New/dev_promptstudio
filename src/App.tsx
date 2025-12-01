@@ -34,6 +34,7 @@ import { isUserLoggedIn, saveUserSession } from './utils/auth';
 import { useUIStore, useAppStore, useDataStore } from './store';
 import { trackEvent } from './utils/analytics';
 import { KeyProvider } from './types/apiKeys';
+import { useApiKeyStore } from './store/useApiKeyStore';
 
 // Lazy load components
 const FeedbackModal = lazy(() => import('./components/FeedbackModal').then(m => ({ default: m.FeedbackModal })));
@@ -103,7 +104,14 @@ const App: React.FC = () => {
   const [variableTemplate, setVariableTemplate] = useState<{ template: string; domain: DomainType } | null>(null);
   const [showABTest, setShowABTest] = useState(false);
   const [showEvaluation, setShowEvaluation] = useState(false);
-  const [selectedProvider, setSelectedProvider] = useState<KeyProvider>('gemini');
+  const [selectedProvider, setSelectedProvider] = useState<KeyProvider>(() => {
+    const { keys } = useApiKeyStore.getState();
+    if (keys.gemini?.status === 'verified') return 'gemini';
+    if (keys.openai?.status === 'verified') return 'openai';
+    if (keys.claude?.status === 'verified') return 'claude';
+    if (keys.openrouter?.status === 'verified') return 'openrouter';
+    return 'gemini';
+  });
 
   const handleLogin = (email: string) => {
     saveUserSession(email);
@@ -274,7 +282,16 @@ const App: React.FC = () => {
          const userMessage = formatErrorMessage(error);
          
          if (error.name === 'RateLimitError' || error.message.includes("429")) {
-             notifyError('Rate limit exceeded. Try switching to a different AI provider or wait a few minutes.');
+             const { keys } = useApiKeyStore.getState();
+             const alternatives = (['openai', 'claude', 'openrouter', 'gemini'] as KeyProvider[])
+               .filter(p => p !== selectedProvider && keys[p]?.status === 'verified');
+             
+             if (alternatives.length > 0) {
+               setSelectedProvider(alternatives[0]);
+               notifyError(`Gemini quota exhausted. Switched to ${alternatives[0]}. Click Enhance again.`);
+             } else {
+               notifyError('Rate limit exceeded. Add API keys for OpenAI/Claude/OpenRouter in Settings.');
+             }
          } else if (error.name === 'APIError' || error.message.includes("500") || error.message.includes("503")) {
              showErrorWithRetry(userMessage, handleEnhance);
          } else {
