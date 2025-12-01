@@ -300,12 +300,10 @@ export const enhancePromptStream = async function* (
 
     console.log('📡 Calling Gemini API with model:', modelName);
     
-    const stream = await retryOperation(async () => {
-      return await ai.models.generateContentStream({
-        model: modelName,
-        contents: metaPrompt,
-        config: requestConfig,
-      });
+    const stream = await ai.models.generateContentStream({
+      model: interceptedConfig.model,
+      contents: interceptedConfig.contents,
+      config: interceptedConfig.config,
     });
 
     try {
@@ -341,7 +339,7 @@ export const enhancePromptStream = async function* (
         case 404:
           throw new APIError(`Model Not Found (404): The model '${modelName}' is not available.`, 404);
         case 429:
-          throw new RateLimitError("Rate limit exceeded. Switch to another provider (OpenAI/Claude/OpenRouter) or wait 1-2 minutes.");
+          throw new RateLimitError("Gemini quota exhausted (limit: 0). Your API key has no quota. Switch to OpenAI/Claude/OpenRouter or create a new Gemini key with billing enabled.");
         case 500:
           throw new APIError("Internal Server Error (500): Google's AI service is having trouble.", 500);
         case 503:
