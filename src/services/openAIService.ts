@@ -22,7 +22,12 @@ export async function* openAIStream(
     }),
   });
 
-  if (!response.ok) throw new Error(`OpenAI API error: ${response.status}`);
+  if (!response.ok) {
+    if (response.status === 401) throw new Error('OpenAI: Invalid API key');
+    if (response.status === 429) throw new Error('OpenAI: Rate limit or quota exceeded');
+    if (response.status === 402) throw new Error('OpenAI: Payment required. Check billing at platform.openai.com');
+    throw new Error(`OpenAI API error: ${response.status}`);
+  }
 
   if (!response.body) throw new Error('No response body');
   

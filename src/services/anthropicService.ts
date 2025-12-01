@@ -22,7 +22,12 @@ export async function* anthropicStream(
     }),
   });
 
-  if (!response.ok) throw new Error(`Anthropic API error: ${response.status}`);
+  if (!response.ok) {
+    if (response.status === 401) throw new Error('Anthropic: Invalid API key');
+    if (response.status === 429) throw new Error('Anthropic: Rate limit exceeded');
+    if (response.status === 402) throw new Error('Anthropic: Payment required. Check billing at console.anthropic.com');
+    throw new Error(`Anthropic API error: ${response.status}`);
+  }
 
   if (!response.body) throw new Error('No response body');
   

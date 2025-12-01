@@ -7,10 +7,10 @@ import { verifyApiKey } from '../../services/llm/verificationService';
 import { notifySuccess, notifyError } from '../ToastSystem';
 
 export const ApiKeyManager: React.FC = () => {
-  const { keys, setKey, updateKeyStatus, deleteKey } = useApiKeyStore();
+  const { keys, models, setKey, setModel, updateKeyStatus, deleteKey } = useApiKeyStore();
 
-  const handleSave = (provider: KeyProvider, value: string) => {
-    setKey(provider, value);
+  const handleSave = (provider: KeyProvider, value: string, model?: string) => {
+    setKey(provider, value, model);
     notifySuccess(`${PROVIDER_CONFIGS[provider].label} API key saved`);
   };
 
@@ -82,8 +82,10 @@ export const ApiKeyManager: React.FC = () => {
               provider={provider}
               config={PROVIDER_CONFIGS[provider]}
               value={keys[provider]?.value || ''}
+              model={models[provider]}
               status={keys[provider]?.status || 'unverified'}
               onSave={handleSave}
+              onModelChange={setModel}
               onDelete={handleDelete}
               onVerify={handleVerify}
             />

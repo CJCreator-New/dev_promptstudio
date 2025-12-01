@@ -39,9 +39,11 @@ export async function* enhancePromptWithKey(
   
   let stream: AsyncGenerator<string, void, unknown>;
   
+  const model = store.getModel(provider);
+  
   switch (provider) {
     case 'openrouter':
-      stream = openRouterStream(prompt, options, apiKey);
+      stream = openRouterStream(prompt, options, apiKey, model);
       break;
     case 'openai':
       stream = openAIStream(prompt, options, apiKey);

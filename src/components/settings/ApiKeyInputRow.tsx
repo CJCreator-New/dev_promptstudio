@@ -6,28 +6,49 @@ interface ApiKeyInputRowProps {
   provider: KeyProvider;
   config: ProviderConfig;
   value: string;
+  model?: string;
   status: 'unverified' | 'verified' | 'invalid' | 'loading';
-  onSave: (provider: KeyProvider, value: string) => void;
+  onSave: (provider: KeyProvider, value: string, model?: string) => void;
+  onModelChange?: (provider: KeyProvider, model: string) => void;
   onDelete: (provider: KeyProvider) => void;
   onVerify: (provider: KeyProvider, value: string) => void;
 }
+
+const OPENROUTER_MODELS = [
+  { value: 'google/gemini-2.0-flash-exp:free', label: 'Gemini 2.0 Flash (Free)' },
+  { value: 'meta-llama/llama-3.2-3b-instruct:free', label: 'Llama 3.2 3B (Free)' },
+  { value: 'microsoft/phi-3-mini-128k-instruct:free', label: 'Phi-3 Mini (Free)' },
+  { value: 'google/gemma-2-9b-it:free', label: 'Gemma 2 9B (Free)' },
+  { value: 'anthropic/claude-3.5-sonnet', label: 'Claude 3.5 Sonnet (Paid)' },
+  { value: 'openai/gpt-4o', label: 'GPT-4o (Paid)' },
+];
 
 export const ApiKeyInputRow: React.FC<ApiKeyInputRowProps> = ({
   provider,
   config,
   value,
+  model,
   status,
   onSave,
+  onModelChange,
   onDelete,
   onVerify,
 }) => {
   const [inputValue, setInputValue] = useState(value);
+  const [selectedModel, setSelectedModel] = useState(model || '');
   const [showKey, setShowKey] = useState(false);
 
   const handleSave = () => {
     if (inputValue.trim()) {
-      onSave(provider, inputValue.trim());
+      onSave(provider, inputValue.trim(), provider === 'openrouter' ? selectedModel : undefined);
       onVerify(provider, inputValue.trim());
+    }
+  };
+
+  const handleModelChange = (newModel: string) => {
+    setSelectedModel(newModel);
+    if (onModelChange) {
+      onModelChange(provider, newModel);
     }
   };
 
@@ -54,6 +75,21 @@ export const ApiKeyInputRow: React.FC<ApiKeyInputRowProps> = ({
           Get API Key <ExternalLink className="w-3 h-3" />
         </a>
       </div>
+
+      {provider === 'openrouter' && (
+        <div className="mb-3">
+          <label className="block text-xs font-medium text-slate-300 mb-2">Model</label>
+          <select
+            value={selectedModel}
+            onChange={(e) => handleModelChange(e.target.value)}
+            className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-slate-100 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+          >
+            {OPENROUTER_MODELS.map(m => (
+              <option key={m.value} value={m.value}>{m.label}</option>
+            ))}
+          </select>
+        </div>
+      )}
 
       <div className="flex gap-2">
         <div className="flex-1 relative">

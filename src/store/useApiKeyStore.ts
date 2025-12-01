@@ -5,10 +5,13 @@ import { KeyProvider, ApiKeyData } from '../types/apiKeys';
 
 interface ApiKeyState {
   keys: Record<KeyProvider, ApiKeyData | null>;
-  setKey: (provider: KeyProvider, value: string) => void;
+  models: Record<KeyProvider, string>;
+  setKey: (provider: KeyProvider, value: string, model?: string) => void;
+  setModel: (provider: KeyProvider, model: string) => void;
   updateKeyStatus: (provider: KeyProvider, status: ApiKeyData['status']) => void;
   deleteKey: (provider: KeyProvider) => void;
   getKey: (provider: KeyProvider) => string | null;
+  getModel: (provider: KeyProvider) => string;
 }
 
 const storage = createJSONStorage<ApiKeyState>(() => ({
@@ -22,9 +25,8 @@ const storage = createJSONStorage<ApiKeyState>(() => ({
       return null;
     }
   },
-  setItem: async (name: string, value: ApiKeyState) => {
-    const serialized = JSON.stringify(value);
-    const encrypted = await encryptData(serialized);
+  setItem: async (name: string, value: string) => {
+    const encrypted = await encryptData(value);
     localStorage.setItem(name, encrypted);
   },
   removeItem: (name: string) => localStorage.removeItem(name),
@@ -39,11 +41,21 @@ export const useApiKeyStore = create<ApiKeyState>()(
         claude: null,
         openrouter: null,
       },
-      setKey: (provider, value) => set((state) => ({
+      models: {
+        openai: 'gpt-4o',
+        gemini: 'gemini-2.0-flash-exp',
+        claude: 'claude-3-5-sonnet-20241022',
+        openrouter: 'google/gemini-2.0-flash-exp:free',
+      },
+      setKey: (provider, value, model) => set((state) => ({
         keys: { 
           ...state.keys, 
           [provider]: { value, status: 'unverified', lastVerified: Date.now() } 
-        }
+        },
+        models: model ? { ...state.models, [provider]: model } : state.models
+      })),
+      setModel: (provider, model) => set((state) => ({
+        models: { ...state.models, [provider]: model }
       })),
       updateKeyStatus: (provider, status) => set((state) => {
         const currentKey = state.keys[provider];
@@ -59,6 +71,7 @@ export const useApiKeyStore = create<ApiKeyState>()(
         keys: { ...state.keys, [provider]: null }
       })),
       getKey: (provider) => get().keys[provider]?.value || null,
+      getModel: (provider) => get().models[provider],
     }),
     {
       name: 'user-llm-api-keys',

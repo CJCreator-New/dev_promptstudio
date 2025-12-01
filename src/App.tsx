@@ -281,16 +281,16 @@ const App: React.FC = () => {
          
          const userMessage = formatErrorMessage(error);
          
-         if (error.name === 'RateLimitError' || error.message.includes("429")) {
+         if (error.name === 'RateLimitError' || error.message.includes("429") || error.message.includes("402") || error.message.includes("quota") || error.message.includes("credits")) {
              const { keys } = useApiKeyStore.getState();
              const alternatives = (['openai', 'claude', 'openrouter', 'gemini'] as KeyProvider[])
                .filter(p => p !== selectedProvider && keys[p]?.status === 'verified');
              
              if (alternatives.length > 0) {
                setSelectedProvider(alternatives[0]);
-               notifyError(`Gemini quota exhausted. Switched to ${alternatives[0]}. Click Enhance again.`);
+               notifyError(`${selectedProvider} failed: ${userMessage}. Switched to ${alternatives[0]}. Try again.`);
              } else {
-               notifyError('Rate limit exceeded. Add API keys for OpenAI/Claude/OpenRouter in Settings.');
+               notifyError(userMessage + ' Add more API keys in Settings.');
              }
          } else if (error.name === 'APIError' || error.message.includes("500") || error.message.includes("503")) {
              showErrorWithRetry(userMessage, handleEnhance);

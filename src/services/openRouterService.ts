@@ -1,12 +1,13 @@
-import { EnhancementOptions, GenerationMode } from '../types';
+import { EnhancementOptions } from '../types';
 import { buildSystemPrompt } from './promptBuilder';
 
 export async function* openRouterStream(
   prompt: string,
   options: EnhancementOptions,
-  apiKey: string
+  apiKey: string,
+  model?: string
 ): AsyncGenerator<string, void, unknown> {
-  console.log('🔑 OpenRouter key check:', apiKey ? 'Present' : 'Missing');
+  console.log('🔑 OpenRouter key check:', apiKey ? 'Present' : 'Missing', 'Model:', model);
   const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
     method: 'POST',
     headers: {
@@ -15,7 +16,7 @@ export async function* openRouterStream(
       'HTTP-Referer': window.location.origin,
     },
     body: JSON.stringify({
-      model: 'anthropic/claude-3.5-sonnet',
+      model: model || 'google/gemini-2.0-flash-exp:free',
       messages: [
         { role: 'system', content: buildSystemPrompt(options) },
         { role: 'user', content: prompt }
@@ -24,7 +25,12 @@ export async function* openRouterStream(
     }),
   });
 
-  if (!response.ok) throw new Error(`OpenRouter API error: ${response.status}`);
+  if (!response.ok) {
+    if (response.status === 402) throw new Error('OpenRouter: No credits. Add credits at openrouter.ai/credits');
+    if (response.status === 401) throw new Error('OpenRouter: Invalid API key');
+    if (response.status === 429) throw new Error('OpenRouter: Rate limit exceeded');
+    throw new Error(`OpenRouter API error: ${response.status}`);
+  }
 
   if (!response.body) throw new Error('No response body');
   
