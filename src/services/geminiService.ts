@@ -156,6 +156,8 @@ export const enhancePromptStream = async function* (
     throw new Error("API Key is missing. Please check your environment configuration.");
   }
 
+  console.log('🔑 Gemini API Key length:', key.length, 'First 10 chars:', key.substring(0, 10));
+  
   const ai = new GoogleGenAI({ apiKey: key });
 
   let toolStrategy = "";
@@ -296,11 +298,13 @@ export const enhancePromptStream = async function* (
       timestamp: Date.now()
     });
 
+    console.log('📡 Calling Gemini API with model:', modelName);
+    
     const stream = await retryOperation(async () => {
       return await ai.models.generateContentStream({
-        model: interceptedConfig.model,
-        contents: interceptedConfig.contents,
-        config: interceptedConfig.config,
+        model: modelName,
+        contents: metaPrompt,
+        config: requestConfig,
       });
     });
 

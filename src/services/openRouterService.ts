@@ -6,6 +6,7 @@ export async function* openRouterStream(
   options: EnhancementOptions,
   apiKey: string
 ): AsyncGenerator<string, void, unknown> {
+  console.log('🔑 OpenRouter key check:', apiKey ? 'Present' : 'Missing');
   const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
     method: 'POST',
     headers: {
