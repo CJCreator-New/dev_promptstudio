@@ -19,7 +19,11 @@ import { OnboardingManager } from './components/Onboarding/OnboardingManager';
 import { LiveRegion } from './components/LiveRegion';
 import { UpdateNotification } from './components/UpdateNotification';
 import { OfflineIndicator } from './components/OfflineIndicator';
-import { LoginModal } from './components/LoginModal';
+import { onAuthChange, logoutUser } from './services/firebaseAuth';
+import { trackFeatureUsage, trackEnhancement } from './services/firebaseAnalytics';
+import { CloudSyncToggle } from './components/CloudSyncToggle';
+import { savePromptToCloud } from './services/cloudSync';
+import { AuthModal } from './components/AuthModal';
 import { RecentPromptsRail } from './components/RecentPromptsRail';
 import { ShareModal } from './components/ShareModal';
 import { OnboardingChecklist } from './components/OnboardingChecklist';
@@ -96,7 +100,14 @@ const App: React.FC = () => {
   const { status: saveStatus, lastSaved } = useAutoSave(input, options);
   const [liveMessage, setLiveMessage] = useState('');
   const [showApiKeySetup, setShowApiKeySetup] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(isUserLoggedIn());
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [cloudSyncEnabled, setCloudSyncEnabled] = useState(() => {
+    try {
+      return localStorage.getItem('cloudSyncEnabled') === 'true';
+    } catch {
+      return false;
+    }
+  });
   const [showShareModal, setShowShareModal] = useState(false);
   const [showTemplateGallery, setShowTemplateGallery] = useState(false);
   const [versionItem, setVersionItem] = useState<HistoryItem | null>(null);
@@ -113,10 +124,22 @@ const App: React.FC = () => {
     return 'gemini';
   });
 
-  const handleLogin = (email: string) => {
-    saveUserSession(email);
-    setIsLoggedIn(true);
-    notifySuccess('Welcome to DevPrompt Studio!');
+  useEffect(() => {
+    const unsubscribe = onAuthChange((user) => {
+      setCurrentUserId(user?.uid || null);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const handleCloudSyncToggle = (enabled: boolean) => {
+    setCloudSyncEnabled(enabled);
+    try {
+      localStorage.setItem('cloudSyncEnabled', String(enabled));
+    } catch {}
+    notifySuccess(enabled ? 'Cloud sync enabled' : 'Cloud sync disabled');
+    if (currentUserId) {
+      trackFeatureUsage(currentUserId, enabled ? 'cloud_sync_enabled' : 'cloud_sync_disabled');
+    }
   };
 
   const handleApplyTemplate = (template: string, domain: DomainType) => {
@@ -266,6 +289,28 @@ const App: React.FC = () => {
           input_length: input.length, 
           output_length: accumulatedText.length 
         });
+        
+        if (currentUserId && cloudSyncEnabled) {
+          try {
+            await savePromptToCloud(currentUserId, {
+              original: input,
+              enhanced: accumulatedText,
+              domain: options.domain,
+              mode: options.mode,
+              provider: selectedProvider
+            });
+          } catch (err) {
+            console.warn('Cloud sync failed:', err);
+          }
+        }
+        
+        if (currentUserId) {
+          await trackEnhancement(currentUserId, {
+            provider: selectedProvider,
+            domain: options.domain,
+            mode: options.mode
+          });
+        }
     }, { maxAttempts: 3, delay: 1000, backoff: true });
 
     Promise.race([enhancePromise, timeoutPromise])
@@ -537,8 +582,12 @@ const App: React.FC = () => {
       setRecoveryDraft(null);
   };
 
-  if (!isLoggedIn) {
-    return <LoginModal onLogin={handleLogin} />;
+  if (!currentUserId) {
+    return (
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
+        <AuthModal />
+      </div>
+    );
   }
 
   return (
@@ -578,9 +627,17 @@ const App: React.FC = () => {
 
         <Header 
           onFeedback={() => setFeedbackOpen(true)} 
-          onLogout={() => setIsLoggedIn(false)}
+          onLogout={async () => {
+            await logoutUser();
+            setCurrentUserId(null);
+          }}
           onTemplateGallery={() => setShowTemplateGallery(true)}
-        />
+        >
+          <CloudSyncToggle 
+            enabled={cloudSyncEnabled}
+            onToggle={handleCloudSyncToggle}
+          />
+        </Header>
         
         {isReadOnly && (
           <div className="bg-blue-900/20 border-b border-blue-500/20 py-3 px-4">

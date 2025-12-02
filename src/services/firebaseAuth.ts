@@ -52,17 +52,37 @@ export const loginAnonymously = async () => {
       isAnonymous: true,
       createdAt: serverTimestamp(),
       totalEnhancements: 0
-    });
+    }, { merge: true });
     
     return user;
   } catch (error: any) {
     if (error.code === 'auth/configuration-not-found') {
-      throw new Error('Firebase Authentication not enabled. Enable it in Firebase Console.');
+      console.warn('Firebase not configured, running in local-only mode');
+      return null;
     }
     throw error;
   }
 };
 
+export const initAnonymousAuth = async () => {
+  try {
+    const currentUser = auth.currentUser;
+    if (currentUser) return currentUser;
+    return await loginAnonymously();
+  } catch (error: any) {
+    if (error.code === 'auth/admin-restricted-operation') {
+      console.warn('Firebase Anonymous auth not enabled. Running in local-only mode.');
+      return null;
+    }
+    console.warn('Anonymous auth failed:', error);
+    return null;
+  }
+};
+
 export const onAuthChange = (callback: (user: User | null) => void) => {
   return onAuthStateChanged(auth, callback);
+};
+
+export const logoutUser = async () => {
+  await auth.signOut();
 };

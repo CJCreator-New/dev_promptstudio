@@ -6,12 +6,12 @@ import { AnimatedContainer } from './ui/AnimatedContainer';
 import { registerUser, loginUser, loginAnonymously } from '../services/firebaseAuth';
 
 interface AuthModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSuccess: (userId: string) => void;
+  isOpen?: boolean;
+  onClose?: () => void;
+  onSuccess?: (userId: string) => void;
 }
 
-export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => {
+export const AuthModal: React.FC<AuthModalProps> = ({ isOpen = true, onClose, onSuccess }) => {
   const [mode, setMode] = useState<'login' | 'register'>('register');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -30,8 +30,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
         ? await registerUser(email, password)
         : await loginUser(email, password);
       
-      onSuccess(user.uid);
-      onClose();
+      onSuccess?.(user.uid);
+      onClose?.();
     } catch (err: any) {
       setError(err.message || 'Authentication failed');
     } finally {
@@ -43,8 +43,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
     setLoading(true);
     try {
       const user = await loginAnonymously();
-      onSuccess(user.uid);
-      onClose();
+      if (user) {
+        onSuccess?.(user.uid);
+        onClose?.();
+      }
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -60,9 +62,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
             <h2 className="text-xl font-semibold text-white">
               {mode === 'register' ? 'Create Account' : 'Welcome Back'}
             </h2>
-            <button onClick={onClose} className="text-slate-400 hover:text-white">
-              <X className="w-5 h-5" />
-            </button>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
