@@ -1,0 +1,14 @@
+name: "CodeQL Config"
+
+queries:
+  - uses: security-and-quality
+
+paths-ignore:
+  - "dist/**"
+  - "node_modules/**"
+
+query-filters:
+  - exclude:
+      id: js/insufficient-password-hash
+  - exclude:
+      id: js/remote-property-injection

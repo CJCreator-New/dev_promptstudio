@@ -32,5 +32,5 @@ export const kebabCase = (str: string): string => {
  * Remove HTML tags from string
  */
 export const stripHtml = (str: string): string => {
-  return str.replace(/<[^>]*>/g, '');
+  return str.replace(/<[^>]*>?/g, '');
 };
