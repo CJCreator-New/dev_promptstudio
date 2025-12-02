@@ -4,6 +4,8 @@ import {
   signInWithEmailAndPassword,
   signInAnonymously,
   onAuthStateChanged,
+  linkWithCredential,
+  EmailAuthProvider,
   User
 } from 'firebase/auth';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
@@ -85,4 +87,22 @@ export const onAuthChange = (callback: (user: User | null) => void) => {
 
 export const logoutUser = async () => {
   await auth.signOut();
+};
+
+export const upgradeAnonymousToEmail = async (email: string, password: string) => {
+  const user = auth.currentUser;
+  if (!user || !user.isAnonymous) {
+    throw new Error('No anonymous user to upgrade');
+  }
+  
+  const credential = EmailAuthProvider.credential(email, password);
+  await linkWithCredential(user, credential);
+  
+  await setDoc(doc(db, 'users', user.uid), {
+    email,
+    isAnonymous: false,
+    upgradedAt: serverTimestamp()
+  }, { merge: true });
+  
+  return user;
 };

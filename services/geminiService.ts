@@ -1,6 +1,6 @@
 import { GoogleGenAI } from "@google/genai";
-import { EnhancementOptions, GenerationMode } from "../types";
-import { RateLimitError, APIError } from "../utils/validation";
+import { EnhancementOptions, GenerationMode } from "../src/types";
+import { RateLimitError, APIError } from "../src/utils/validation";
 
 const SYSTEM_INSTRUCTION = `
 You are DevPrompt Studio, an elite Prompt Engineer specialized specifically in Software Development, Coding, and UI/UX Design.

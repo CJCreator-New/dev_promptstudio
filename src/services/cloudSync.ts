@@ -82,3 +82,24 @@ export const getSharedPrompt = async (shareId: string) => {
 export const deletePrompt = async (promptId: string) => {
   await deleteDoc(doc(db, 'prompts', promptId));
 };
+
+// Sync all prompts to cloud
+export const syncAllPromptsToCloud = async (userId: string, prompts: any[]) => {
+  const batch = prompts.slice(0, 500);
+  for (const prompt of batch) {
+    await savePromptToCloud(userId, prompt);
+  }
+};
+
+// Get last sync time
+export const getLastSyncTime = async (userId: string) => {
+  const userDoc = await getDoc(doc(db, 'users', userId));
+  return userDoc.data()?.lastSyncTime || null;
+};
+
+// Update last sync time
+export const updateLastSyncTime = async (userId: string) => {
+  await updateDoc(doc(db, 'users', userId), {
+    lastSyncTime: serverTimestamp()
+  });
+};
