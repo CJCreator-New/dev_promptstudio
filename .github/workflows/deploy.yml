@@ -30,6 +30,15 @@ jobs:
       - name: Install dependencies
         run: npm ci
       
+      - name: Check Secrets
+        run: |
+          echo "Checking if secrets are set..."
+          if [ -z "${{ secrets.VITE_FIREBASE_API_KEY }}" ]; then
+            echo "ERROR: VITE_FIREBASE_API_KEY is not set!"
+            exit 1
+          fi
+          echo "Secrets are configured"
+      
       - name: Build
         env:
           VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
