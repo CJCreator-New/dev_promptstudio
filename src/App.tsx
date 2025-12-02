@@ -39,6 +39,7 @@ import { useUIStore, useAppStore, useDataStore } from './store';
 import { trackEvent } from './utils/analytics';
 import { KeyProvider } from './types/apiKeys';
 import { useApiKeyStore } from './store/useApiKeyStore';
+import { secureStorage } from './utils/secureStorage';
 
 // Lazy load components
 const FeedbackModal = lazy(() => import('./components/FeedbackModal').then(m => ({ default: m.FeedbackModal })));
@@ -178,6 +179,9 @@ const App: React.FC = () => {
 
   useEffect(() => {
     reportWebVitals(console.log);
+    
+    // Migrate existing API keys to encrypted storage
+    secureStorage.migrateExistingKeys().catch(console.error);
     
     // Check if user has API key
     const hasApiKey = localStorage.getItem('hasApiKey');
