@@ -1,6 +1,7 @@
-import React from 'react';
-import { Key, Shield } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Key, Shield, RefreshCw } from 'lucide-react';
 import { useApiKeyStore } from '../../store/useApiKeyStore';
+import { getFreeModels, getCachedFreeModels } from '../../services/openRouterSync';
 import { useApiConfigStore, ProviderId } from '../../store/apiConfigStore';
 import { PROVIDER_CONFIGS, KeyProvider } from '../../types/apiKeys';
 import { ApiKeyInputRow } from './ApiKeyInputRow';
@@ -11,6 +12,37 @@ import { notifySuccess, notifyError } from '../ToastSystem';
 export const ApiKeyManager: React.FC = () => {
   const oldStore = useApiKeyStore();
   const { upsertModelConfig, updateVerificationStatus, removeModelConfig } = useApiConfigStore();
+  const [freeModelsCount, setFreeModelsCount] = useState(0);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [lastSync, setLastSync] = useState<string | null>(null);
+
+  useEffect(() => {
+    const cached = getCachedFreeModels();
+    if (cached) {
+      setFreeModelsCount(cached.models.length);
+      setLastSync(cached.lastSyncedAt);
+    }
+  }, []);
+
+  const handleSyncFreeModels = async () => {
+    const openRouterKey = oldStore.keys.openrouter?.value;
+    if (!openRouterKey) {
+      notifyError('Add OpenRouter API key first');
+      return;
+    }
+
+    setIsSyncing(true);
+    try {
+      const result = await getFreeModels(openRouterKey);
+      setFreeModelsCount(result.models.length);
+      setLastSync(result.lastSyncedAt);
+      notifySuccess(`Synced ${result.models.length} free models`);
+    } catch (error) {
+      notifyError('Failed to sync free models');
+    } finally {
+      setIsSyncing(false);
+    }
+  };
 
   const handleSave = async (provider: KeyProvider, value: string, model?: string) => {
     const modelId = model || oldStore.models[provider];
@@ -96,6 +128,32 @@ export const ApiKeyManager: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {oldStore.keys.openrouter?.value && (
+          <div className="bg-slate-700/50 border border-slate-600 rounded-lg p-4 mb-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-semibold text-slate-200 mb-1">OpenRouter Free Models</h3>
+                <p className="text-xs text-slate-400">
+                  {freeModelsCount > 0 ? `${freeModelsCount} free models available` : 'Not synced yet'}
+                  {lastSync && (
+                    <span className="ml-2 text-slate-500">
+                      • Last synced: {new Date(lastSync).toLocaleDateString()}
+                    </span>
+                  )}
+                </p>
+              </div>
+              <button
+                onClick={handleSyncFreeModels}
+                disabled={isSyncing}
+                className="flex items-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-500 disabled:bg-slate-600 text-white text-xs font-medium rounded-lg transition-colors"
+              >
+                <RefreshCw className={`w-4 h-4 ${isSyncing ? 'animate-spin' : ''}`} />
+                {isSyncing ? 'Syncing...' : 'Sync Free Models'}
+              </button>
+            </div>
+          </div>
+        )}
 
         <div className="space-y-4">
           {(Object.keys(PROVIDER_CONFIGS) as KeyProvider[]).map((provider) => (

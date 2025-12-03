@@ -40,6 +40,7 @@ import { trackEvent } from './utils/analytics';
 import { KeyProvider } from './types/apiKeys';
 import { useApiKeyStore } from './store/useApiKeyStore';
 import { secureStorage } from './utils/secureStorage';
+import { getFreeModels, shouldSync } from './services/openRouterSync';
 
 // Lazy load components
 const FeedbackModal = lazy(() => import('./components/FeedbackModal').then(m => ({ default: m.FeedbackModal })));
@@ -182,6 +183,22 @@ const App: React.FC = () => {
     
     // Migrate existing API keys to encrypted storage
     secureStorage.migrateExistingKeys().catch(console.error);
+    
+    // Auto-sync OpenRouter free models if needed
+    const syncFreeModels = async () => {
+      const { keys } = useApiKeyStore.getState();
+      const openRouterKey = keys.openrouter?.value;
+      
+      if (openRouterKey && shouldSync()) {
+        try {
+          await getFreeModels(openRouterKey);
+          console.log('✅ OpenRouter free models synced');
+        } catch (error) {
+          console.warn('Failed to sync OpenRouter free models:', error);
+        }
+      }
+    };
+    syncFreeModels();
     
     // Check if user has API key
     const hasApiKey = localStorage.getItem('hasApiKey');
