@@ -17,7 +17,7 @@ export const SuggestionChips: React.FC<SuggestionChipsProps> = ({
   return (
     <div 
       id="suggestions-area" 
-      className="flex flex-wrap gap-2 items-center animate-in fade-in slide-in-from-top-1" 
+      className="flex flex-wrap gap-2 items-center animate-in fade-in slide-in-from-top-1 overflow-x-auto" 
       aria-label="Smart Suggestions"
     >
       <div className="text-[10px] font-bold text-indigo-400 flex items-center gap-1 mr-1" aria-hidden="true">

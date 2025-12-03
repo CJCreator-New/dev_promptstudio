@@ -4,9 +4,9 @@ import PromptInput from './components/PromptInput';
 import PromptOutput from './components/PromptOutput';
 import { enhancePromptWithKey } from './services/enhancementService';
 import { HistoryItem, SavedProject, CustomTemplate, DomainType, GenerationMode } from './types';
-import { generateShareLink, parseShareParam } from './utils/shareUtils';
+import { parseShareParam } from './utils/shareUtils';
 import { withRetry, formatErrorMessage, createErrorContext, logError } from './utils/errorHandling';
-import { measurePerformance } from './utils/performanceMonitor';
+
 import { Menu, X, Eye, Edit3 } from 'lucide-react';
 import { AppToaster, toast, notifySuccess, notifyError, showErrorWithRetry } from './components/ToastSystem';
 import { ErrorBoundary } from './components/ErrorBoundary';
@@ -34,7 +34,7 @@ import { VariableEditor } from './components/VariableEditor';
 import { ABTestWorkspace } from './components/ABTestWorkspace';
 import { EvaluationPanel } from './components/EvaluationPanel';
 import { extractVariables } from './utils/variableInterpolation';
-import { isUserLoggedIn, saveUserSession } from './utils/auth';
+
 import { useUIStore, useAppStore, useDataStore } from './store';
 import { trackEvent } from './utils/analytics';
 import { KeyProvider } from './types/apiKeys';
@@ -47,7 +47,7 @@ import { useThemeStore } from './store/themeStore';
 const FeedbackModal = lazy(() => import('./components/FeedbackModal').then(m => ({ default: m.FeedbackModal })));
 const RecoveryModal = lazy(() => import('./components/RecoveryModal').then(m => ({ default: m.RecoveryModal })));
 const HistorySidebar = lazy(() => import('./components/HistorySidebar'));
-const ApiKeyManager = lazy(() => import('./components/settings/ApiKeyManager').then(m => ({ default: m.ApiKeyManager })));
+
 const ApiKeySetupModal = lazy(() => import('./components/ApiKeySetupModal').then(m => ({ default: m.ApiKeySetupModal })));
 
 const App: React.FC = () => {
@@ -103,7 +103,7 @@ const App: React.FC = () => {
   const { status: saveStatus, lastSaved } = useAutoSave(input, options);
   const [liveMessage, setLiveMessage] = useState('');
   const [showApiKeySetup, setShowApiKeySetup] = useState(false);
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [currentUserId, setCurrentUserId] = useState<string>('');
   const [cloudSyncEnabled, setCloudSyncEnabled] = useState(() => {
     try {
       return localStorage.getItem('cloudSyncEnabled') === 'true';
@@ -131,7 +131,7 @@ const App: React.FC = () => {
     // Defer auth listener to after first paint
     const timeoutId = setTimeout(() => {
       const unsubscribe = onAuthChange((user) => {
-        setCurrentUserId(user?.uid || null);
+        setCurrentUserId(user?.uid || '');
       });
       return () => unsubscribe();
     }, 100);
@@ -326,11 +326,11 @@ const App: React.FC = () => {
         if (currentUserId && cloudSyncEnabled) {
           try {
             await savePromptToCloud(currentUserId, {
+              id: newItem.id,
               original: input,
               enhanced: accumulatedText,
               domain: options.domain,
-              mode: options.mode,
-              provider: selectedProvider
+              mode: options.mode
             });
           } catch (err) {
             console.warn('Cloud sync failed:', err);
@@ -364,7 +364,7 @@ const App: React.FC = () => {
              const alternatives = (['openai', 'claude', 'openrouter', 'gemini'] as KeyProvider[])
                .filter(p => p !== selectedProvider && keys[p]?.status === 'verified');
              
-             if (alternatives.length > 0) {
+             if (alternatives.length > 0 && alternatives[0]) {
                setSelectedProvider(alternatives[0]);
                notifyError(`${selectedProvider} failed: ${userMessage}. Switched to ${alternatives[0]}. Try again.`);
              } else {
@@ -615,7 +615,7 @@ const App: React.FC = () => {
       setRecoveryDraft(null);
   };
 
-  if (!currentUserId) {
+  if (!currentUserId || currentUserId === '') {
     return (
       <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
         <AuthModal />
@@ -662,7 +662,7 @@ const App: React.FC = () => {
           onFeedback={() => setFeedbackOpen(true)} 
           onLogout={async () => {
             await logoutUser();
-            setCurrentUserId(null);
+            setCurrentUserId('');
           }}
           onTemplateGallery={() => setShowTemplateGallery(true)}
         >
@@ -866,8 +866,8 @@ const App: React.FC = () => {
           <ShareModal
             isOpen={showShareModal}
             onClose={() => setShowShareModal(false)}
-            original={originalPrompt}
-            enhanced={enhancedPrompt}
+            original={originalPrompt || ''}
+            enhanced={enhancedPrompt || ''}
             options={options}
           />
 
@@ -910,7 +910,7 @@ const App: React.FC = () => {
           <EvaluationPanel
             isOpen={showEvaluation}
             onClose={() => setShowEvaluation(false)}
-            output={enhancedPrompt}
+            output={enhancedPrompt || ''}
           />
         </main>
       </div>

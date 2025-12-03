@@ -50,7 +50,7 @@ export const SmartSuggestions: React.FC<Props> = ({ text, onApplySuggestion }) =
   };
 
   return (
-    <div className="absolute right-4 top-4 w-80 bg-white border rounded-lg shadow-lg p-4 z-10 max-h-96 overflow-y-auto">
+    <div className="relative w-full bg-white border rounded-lg shadow-lg p-4 max-h-96 overflow-y-auto">
       <div className="flex items-center justify-between mb-3">
         <h3 className="font-semibold text-sm">Smart Suggestions</h3>
         <button
