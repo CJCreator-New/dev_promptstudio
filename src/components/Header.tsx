@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Sparkles, Terminal, MessageSquare, Key, X, LogOut, BookTemplate } from 'lucide-react';
+import { Terminal, MessageSquare, Key, X, LogOut, BookTemplate } from 'lucide-react';
 import { ApiKeyManager } from './settings/ApiKeyManager';
 import { clearUserSession, getUserSession } from '../utils/auth';
+import { ThemeToggle } from './ThemeToggle';
 
 interface HeaderProps {
   onFeedback?: () => void;
@@ -23,23 +24,23 @@ const Header: React.FC<HeaderProps> = React.memo(({ onFeedback, onLogout, onTemp
 
   return (
     <>
-    <header className="border-b border-slate-700 bg-slate-800 backdrop-blur-md sticky top-0 z-50 shadow-sm" role="banner">
+    <header className="border-b border-border bg-background/80 backdrop-blur-md sticky top-0 z-50 shadow-sm transition-colors" role="banner">
       <div className="max-w-[1920px] mx-auto px-3 sm:px-4 lg:px-6 h-16 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="bg-gradient-to-br from-blue-500 to-cyan-600 p-2 rounded-lg shadow-lg">
+          <div className="bg-gradient-to-br from-accent-primary to-accent-primary-hover p-2 rounded-lg shadow-md">
             <Terminal className="w-6 h-6 text-white" aria-hidden="true" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-slate-100 tracking-tight" id="app-title">
+            <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100 tracking-tight" id="app-title">
               DevPrompt<span className="text-blue-400">Studio</span>
             </h1>
-            <p className="text-xs text-slate-300 font-medium hidden sm:block">AI-Powered Engineering Assistant</p>
+            <p className="text-xs text-slate-600 dark:text-slate-300 font-medium hidden sm:block">AI-Powered Engineering Assistant</p>
           </div>
         </div>
         
         <div className="flex items-center gap-2 sm:gap-3">
           {userSession && (
-            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-700/50 border border-slate-600 text-slate-300 text-xs" title="Logged in as">
+            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-700/50 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 text-xs transition-colors" title="Logged in as">
               <div className="w-6 h-6 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold text-xs">
                 {userSession.email.charAt(0).toUpperCase()}
               </div>
@@ -49,10 +50,12 @@ const Header: React.FC<HeaderProps> = React.memo(({ onFeedback, onLogout, onTemp
 
           {children}
 
+          <ThemeToggle />
+
           {onTemplateGallery && (
             <button
               onClick={onTemplateGallery}
-              className="flex items-center gap-2 text-xs font-medium text-slate-300 hover:text-white transition-colors bg-slate-700 hover:bg-slate-600 px-3 py-2 rounded-lg border border-slate-600 hover:border-slate-500 focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900 outline-none min-h-[44px]"
+              className="flex items-center gap-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 hover:border-slate-400 dark:hover:border-slate-500 focus:ring-2 focus:ring-blue-500 outline-none min-h-[44px]"
               aria-label="Browse Template Gallery"
               title="Browse Template Gallery"
             >

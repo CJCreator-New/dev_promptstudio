@@ -51,6 +51,30 @@ export default defineConfig(({ mode }) => {
         alias: {
           '@': path.resolve(__dirname, '.'),
         }
+      },
+      build: {
+        rollupOptions: {
+          output: {
+            manualChunks: {
+              'react-vendor': ['react', 'react-dom'],
+              'ui-vendor': ['lucide-react', 'framer-motion'],
+              'state-vendor': ['zustand'],
+              'db-vendor': ['dexie'],
+              'firebase-vendor': ['firebase/app', 'firebase/auth', 'firebase/firestore', 'firebase/analytics']
+            }
+          }
+        },
+        chunkSizeWarningLimit: 600,
+        minify: 'terser',
+        terserOptions: {
+          compress: {
+            drop_console: mode === 'production',
+            drop_debugger: mode === 'production'
+          }
+        }
+      },
+      optimizeDeps: {
+        include: ['react', 'react-dom', 'zustand']
       }
     };
 });

@@ -1,61 +1,30 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-body {
-  background-color: #0f172a;
-  color: #e2e8f0;
-}
+@import './styles/globals.css';
 
 /* Custom scrollbar for textareas */
 textarea::-webkit-scrollbar {
   width: 8px;
 }
 textarea::-webkit-scrollbar-track {
-  background: #1e293b; 
+  background: rgb(var(--bg-elevated)); 
 }
 textarea::-webkit-scrollbar-thumb {
-  background: #475569; 
+  background: rgb(var(--border-strong)); 
   border-radius: 4px;
 }
 textarea::-webkit-scrollbar-thumb:hover {
-  background: #64748b; 
+  background: rgb(var(--text-tertiary)); 
 }
 
 /* Adjust Prism code block styling */
 pre[class*="language-"] {
   border-radius: 0.5rem;
   margin: 0;
-  background: #1e293b !important;
-  border: 1px solid #334155;
+  background: rgb(var(--bg-elevated)) !important;
+  border: 1px solid rgb(var(--border-default));
 }
 code[class*="language-"], pre[class*="language-"] {
   font-family: 'JetBrains Mono', monospace !important;
   font-size: 0.85rem !important;
   text-shadow: none !important;
-}
-
-/* Accessibility: High Contrast Focus Ring */
-:focus-visible {
-  outline: 3px solid #8b5cf6;
-  outline-offset: 2px;
-}
-
-/* Accessibility: Skip Link */
-.skip-link {
-  position: absolute;
-  top: -100px;
-  left: 1rem;
-  background: #8b5cf6;
-  color: white;
-  font-weight: 600;
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.5rem;
-  z-index: 100;
-  transition: top 0.2s ease-in-out;
-  text-decoration: none;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
-}
-.skip-link:focus {
-  top: 1rem;
+  color: rgb(var(--text-primary)) !important;
 }

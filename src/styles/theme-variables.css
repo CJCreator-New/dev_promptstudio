@@ -1,0 +1,126 @@
+/**
+ * Semantic Color Tokens - Light Theme
+ * Enhanced with vibrant, modern palette
+ */
+:root,
+[data-theme="light"] {
+  /* Background - More vibrant neutrals */
+  --bg-base: 255 255 255; /* #FFFFFF */
+  --bg-elevated: 248 249 251; /* #F8F9FB - warmer than before */
+  --bg-overlay: 238 241 247; /* #EEF1F7 - subtle accent */
+  --bg-subtle: 240 242 255; /* #F0F2FF - light primary tint */
+  
+  /* Text - Better contrast */
+  --text-primary: 26 29 41; /* #1A1D29 - darker for readability */
+  --text-secondary: 107 114 128; /* #6B7280 */
+  --text-tertiary: 156 163 175; /* #9CA3AF */
+  --text-inverse: 255 255 255; /* #FFFFFF */
+  
+  /* Border - Refined */
+  --border-default: 229 231 235; /* #E5E7EB */
+  --border-subtle: 243 244 246; /* #F3F4F6 */
+  --border-strong: 209 213 219; /* #D1D5DB */
+  
+  /* Accent - Primary (Vibrant Blue) */
+  --accent-primary: 91 95 255; /* #5B5FFF - more saturated */
+  --accent-primary-hover: 79 82 232; /* #4F52E8 - gradient end */
+  --accent-primary-subtle: 240 242 255; /* #F0F2FF - light background */
+  
+  /* Accent - Success (Green) */
+  --accent-success: 34 197 94; /* #22C55E */
+  --accent-success-hover: 22 163 74; /* #16A34A */
+  --accent-success-subtle: 240 253 244; /* #F0FDF4 */
+  
+  /* Accent - Warning (Amber) */
+  --accent-warning: 245 158 11; /* #F59E0B */
+  --accent-warning-hover: 217 119 6; /* #D97706 */
+  --accent-warning-subtle: 255 251 235; /* #FFFBEB */
+  
+  /* Accent - Error (Red) */
+  --accent-error: 239 68 68; /* #EF4444 */
+  --accent-error-hover: 220 38 38; /* #DC2626 */
+  --accent-error-subtle: 254 242 242; /* #FEF2F2 */
+  
+  /* Accent - Info (Indigo) */
+  --accent-info: 99 102 241; /* #6366F1 */
+  --accent-info-hover: 79 70 229; /* #4F46E5 */
+  --accent-info-subtle: 238 242 255; /* #EEF2FF */
+  
+  /* Interactive */
+  --interactive-default: 243 244 246; /* #F3F4F6 */
+  --interactive-hover: 229 231 235; /* #E5E7EB */
+  --interactive-active: 209 213 219; /* #D1D5DB */
+  
+  /* Focus */
+  --focus-ring: 59 130 246; /* #3B82F6 */
+  --focus-ring-offset: 255 255 255; /* #FFFFFF */
+  
+  /* Shadow */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+}
+
+/**
+ * Semantic Color Tokens - Dark Theme
+ */
+[data-theme="dark"],
+.dark {
+  /* Background */
+  --bg-base: 15 20 25; /* #0F1419 */
+  --bg-elevated: 28 33 40; /* #1C2128 */
+  --bg-overlay: 38 44 54; /* #262C36 */
+  --bg-subtle: 51 58 68; /* #333A44 */
+  
+  /* Text */
+  --text-primary: 230 237 243; /* #E6EDF3 */
+  --text-secondary: 145 152 161; /* #9198A1 */
+  --text-tertiary: 101 109 118; /* #656D76 */
+  --text-inverse: 17 24 39; /* #111827 */
+  
+  /* Border */
+  --border-default: 51 58 68; /* #333A44 */
+  --border-subtle: 38 44 54; /* #262C36 */
+  --border-strong: 71 79 91; /* #474F5B */
+  
+  /* Accent - Primary (Blue) */
+  --accent-primary: 96 165 250; /* #60A5FA */
+  --accent-primary-hover: 59 130 246; /* #3B82F6 */
+  --accent-primary-subtle: 30 58 138; /* #1E3A8A */
+  
+  /* Accent - Success (Green) */
+  --accent-success: 74 222 128; /* #4ADE80 */
+  --accent-success-hover: 34 197 94; /* #22C55E */
+  --accent-success-subtle: 20 83 45; /* #14532D */
+  
+  /* Accent - Warning (Amber) */
+  --accent-warning: 251 191 36; /* #FBBF24 */
+  --accent-warning-hover: 245 158 11; /* #F59E0B */
+  --accent-warning-subtle: 120 53 15; /* #78350F */
+  
+  /* Accent - Error (Red) */
+  --accent-error: 248 113 113; /* #F87171 */
+  --accent-error-hover: 239 68 68; /* #EF4444 */
+  --accent-error-subtle: 127 29 29; /* #7F1D1D */
+  
+  /* Accent - Info (Indigo) */
+  --accent-info: 129 140 248; /* #818CF8 */
+  --accent-info-hover: 99 102 241; /* #6366F1 */
+  --accent-info-subtle: 49 46 129; /* #312E81 */
+  
+  /* Interactive */
+  --interactive-default: 38 44 54; /* #262C36 */
+  --interactive-hover: 51 58 68; /* #333A44 */
+  --interactive-active: 71 79 91; /* #474F5B */
+  
+  /* Focus */
+  --focus-ring: 96 165 250; /* #60A5FA */
+  --focus-ring-offset: 15 20 25; /* #0F1419 */
+  
+  /* Shadow */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5), 0 4px 6px -4px rgb(0 0 0 / 0.4);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.6), 0 8px 10px -6px rgb(0 0 0 / 0.5);
+}

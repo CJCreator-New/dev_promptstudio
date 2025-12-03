@@ -25,8 +25,8 @@ export const Select: React.FC<SelectProps> = React.memo(({
   const errorId = error ? `${selectId}-error` : undefined;
   const helperId = helperText ? `${selectId}-helper` : undefined;
   
-  const selectClasses = `input-base appearance-none bg-slate-800 text-slate-100 ${
-    error ? 'input-error' : 'input-valid'
+  const selectClasses = `w-full appearance-none bg-background border-[1.5px] rounded-lg px-3 py-2.5 pr-10 text-sm text-foreground transition-all outline-none ${
+    error ? 'border-accent-error focus:ring-2 focus:ring-accent-error/10' : 'border-border focus:border-accent-primary focus:ring-2 focus:ring-accent-primary/10'
   } ${className}`;
   
   return (
@@ -46,7 +46,7 @@ export const Select: React.FC<SelectProps> = React.memo(({
           className={`${selectClasses} [&>option]:py-2`}
           aria-invalid={!!error}
           aria-describedby={[errorId, helperId].filter(Boolean).join(' ') || undefined}
-          style={{ colorScheme: 'dark' }}
+
           {...props}
         >
           {options.map((option) => (
@@ -56,7 +56,7 @@ export const Select: React.FC<SelectProps> = React.memo(({
           ))}
         </select>
         
-        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-400">
+        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-muted">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
           </svg>

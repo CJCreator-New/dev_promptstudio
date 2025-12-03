@@ -1,68 +1,51 @@
 /**
- * Performance monitoring utilities for tracking operations
+ * Performance monitoring for Lighthouse optimization
  */
 
-import { shouldShowLogs } from './environment';
-
-export interface PerformanceMetric {
-  name: string;
-  duration: number;
-  timestamp: number;
+export function markPerformance(name: string) {
+  if ('performance' in window && performance.mark) {
+    performance.mark(name);
+  }
 }
 
-const metrics: PerformanceMetric[] = [];
-
-export const measurePerformance = (name: string, fn: () => void | Promise<void>) => {
-  const startMark = `${name}-start`;
-  const endMark = `${name}-end`;
-  
-  performance.mark(startMark);
-  const result = fn();
-  
-  if (result instanceof Promise) {
-    return result.finally(() => {
-      performance.mark(endMark);
-      recordMetric(name, startMark, endMark);
-    });
-  } else {
-    performance.mark(endMark);
-    recordMetric(name, startMark, endMark);
-    return undefined;
-  }
-};
-
-const recordMetric = (name: string, startMark: string, endMark: string) => {
-  performance.measure(name, startMark, endMark);
-  const measure = performance.getEntriesByName(name)[0];
-  
-  if (measure) {
-    const metric: PerformanceMetric = {
-      name,
-      duration: measure.duration,
-      timestamp: Date.now()
-    };
-    
-    metrics.push(metric);
-    
-    if (shouldShowLogs) {
+export function measurePerformance(name: string, startMark: string, endMark: string) {
+  if ('performance' in window && performance.measure) {
+    try {
+      performance.measure(name, startMark, endMark);
+      const measure = performance.getEntriesByName(name)[0];
       console.log(`⚡ ${name}: ${measure.duration.toFixed(2)}ms`);
-      
-      if (measure.duration > 1000) {
-        console.warn(`⚠️ Slow operation: ${name} took ${measure.duration.toFixed(2)}ms`);
-      }
-    }
-    
-    // Keep only last 100 metrics
-    if (metrics.length > 100) {
-      metrics.shift();
+    } catch (e) {
+      // Marks don't exist yet
     }
   }
-};
+}
 
-export const getMetrics = () => [...metrics];
+export function reportWebVitals(onPerfEntry?: (metric: any) => void) {
+  if (onPerfEntry && onPerfEntry instanceof Function) {
+    import('web-vitals').then(({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
+      getCLS(onPerfEntry);
+      getFID(onPerfEntry);
+      getFCP(onPerfEntry);
+      getLCP(onPerfEntry);
+      getTTFB(onPerfEntry);
+    });
+  }
+}
 
-export const clearMetrics = () => {
-  metrics.length = 0;
-  performance.clearMarks();
-  performance.clearMeasures();
-};
+// Break up long tasks
+export function yieldToMain() {
+  return new Promise(resolve => {
+    setTimeout(resolve, 0);
+  });
+}
+
+export async function runWithYield<T>(tasks: Array<() => T>): Promise<T[]> {
+  const results: T[] = [];
+  
+  for (const task of tasks) {
+    results.push(task());
+    await yieldToMain();
+  }
+  
+  return results;
+}

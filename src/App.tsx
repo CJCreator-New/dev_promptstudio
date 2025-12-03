@@ -41,6 +41,7 @@ import { KeyProvider } from './types/apiKeys';
 import { useApiKeyStore } from './store/useApiKeyStore';
 import { secureStorage } from './utils/secureStorage';
 import { getFreeModels, shouldSync } from './services/openRouterSync';
+import { useThemeStore } from './store/themeStore';
 
 // Lazy load components
 const FeedbackModal = lazy(() => import('./components/FeedbackModal').then(m => ({ default: m.FeedbackModal })));
@@ -127,10 +128,15 @@ const App: React.FC = () => {
   });
 
   useEffect(() => {
-    const unsubscribe = onAuthChange((user) => {
-      setCurrentUserId(user?.uid || null);
-    });
-    return () => unsubscribe();
+    // Defer auth listener to after first paint
+    const timeoutId = setTimeout(() => {
+      const unsubscribe = onAuthChange((user) => {
+        setCurrentUserId(user?.uid || null);
+      });
+      return () => unsubscribe();
+    }, 100);
+    
+    return () => clearTimeout(timeoutId);
   }, []);
 
   const handleCloudSyncToggle = (enabled: boolean) => {
@@ -179,32 +185,38 @@ const App: React.FC = () => {
   ]);
 
   useEffect(() => {
-    reportWebVitals(console.log);
+    // Initialize theme immediately (critical for UI)
+    useThemeStore.getState().initTheme();
     
-    // Migrate existing API keys to encrypted storage
-    secureStorage.migrateExistingKeys().catch(console.error);
-    
-    // Auto-sync OpenRouter free models if needed
-    const syncFreeModels = async () => {
-      const { keys } = useApiKeyStore.getState();
-      const openRouterKey = keys.openrouter?.value;
+    // Defer non-critical initialization
+    requestIdleCallback(() => {
+      reportWebVitals(console.log);
       
-      if (openRouterKey && shouldSync()) {
-        try {
-          await getFreeModels(openRouterKey);
-          console.log('✅ OpenRouter free models synced');
-        } catch (error) {
-          console.warn('Failed to sync OpenRouter free models:', error);
+      // Migrate API keys in background
+      secureStorage.migrateExistingKeys().catch(console.error);
+      
+      // Auto-sync OpenRouter free models
+      const syncFreeModels = async () => {
+        const { keys } = useApiKeyStore.getState();
+        const openRouterKey = keys.openrouter?.value;
+        
+        if (openRouterKey && shouldSync()) {
+          try {
+            await getFreeModels(openRouterKey);
+            console.log('✅ OpenRouter free models synced');
+          } catch (error) {
+            console.warn('Failed to sync OpenRouter free models:', error);
+          }
         }
+      };
+      syncFreeModels();
+      
+      // Check API key after delay
+      const hasApiKey = localStorage.getItem('hasApiKey');
+      if (!hasApiKey) {
+        setTimeout(() => setShowApiKeySetup(true), 2000);
       }
-    };
-    syncFreeModels();
-    
-    // Check if user has API key
-    const hasApiKey = localStorage.getItem('hasApiKey');
-    if (!hasApiKey) {
-      setTimeout(() => setShowApiKeySetup(true), 2000);
-    }
+    }, { timeout: 2000 });
   }, []);
 
   useEffect(() => {
@@ -613,7 +625,7 @@ const App: React.FC = () => {
 
   return (
     <ErrorBoundary>
-      <div className="min-h-screen bg-slate-900 text-slate-100 flex flex-col font-sans selection:bg-blue-500/30 selection:text-blue-200">
+      <div className="min-h-screen bg-background text-foreground flex flex-col font-sans selection:bg-accent-primary/30 transition-colors">
         <AppToaster />
         <LiveRegion message={liveMessage} priority="polite" />
         <UpdateNotification />
@@ -721,8 +733,8 @@ const App: React.FC = () => {
              />
           </div>
 
-          <div className="hidden lg:flex w-80 xl:w-96 h-[calc(100vh-120px)] flex-shrink-0 gap-4">
-             <div className="flex-1 bg-slate-800 border border-slate-700 rounded-xl overflow-hidden shadow-lg">
+          <div className="hidden lg:block w-72 h-[calc(100vh-120px)] flex-shrink-0">
+             <div className="h-full bg-elevated border border-border rounded-xl overflow-hidden shadow-lg">
                <Suspense fallback={<div className="p-4 animate-pulse"><div className="h-4 bg-slate-600 rounded mb-2"></div><div className="h-4 bg-slate-600 rounded w-3/4"></div></div>}>
                  <HistorySidebar 
                    history={history} 
@@ -741,15 +753,15 @@ const App: React.FC = () => {
                  />
                </Suspense>
              </div>
-             
-             <RecentPromptsRail
-               history={history}
-               onRerun={handleRerunPrompt}
-               onSaveAsTemplate={handleSaveAsTemplate}
-               onDuplicate={handleDuplicatePrompt}
-               onViewVersions={handleViewVersions}
-             />
           </div>
+          
+          <RecentPromptsRail
+            history={history}
+            onRerun={handleRerunPrompt}
+            onSaveAsTemplate={handleSaveAsTemplate}
+            onDuplicate={handleDuplicatePrompt}
+            onViewVersions={handleViewVersions}
+          />
 
           {isMobileHistoryOpen && (
             <div className="fixed inset-0 z-50 lg:hidden flex" role="dialog" aria-modal="true" aria-label="History Sidebar">

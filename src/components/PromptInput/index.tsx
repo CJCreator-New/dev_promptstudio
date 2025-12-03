@@ -104,13 +104,13 @@ const PromptInput: React.FC<PromptInputProps> = ({
   }));
 
   return (
-    <div className={`flex flex-col h-full card-base ${readOnly ? 'opacity-80' : 'card-interactive'}`}>
+    <div className={`flex flex-col h-full card-elevated ${readOnly ? 'opacity-80' : ''}`}>
       
       {/* Header */}
-      <div className="px-6 py-4 border-b border-slate-800 bg-slate-900 flex items-center justify-between z-20 gap-4">
+      <div className="px-6 py-4 border-b border-border bg-elevated flex items-center justify-between z-20 gap-4">
         <div className="flex items-center gap-4 overflow-hidden">
-          <h2 className="text-sm font-semibold text-secondary flex items-center gap-2 whitespace-nowrap">
-            {readOnly ? <Lock className="w-4 h-4 text-slate-500" aria-hidden="true" /> : <Settings2 className="w-4 h-4 text-indigo-400" aria-hidden="true" />}
+          <h2 className="text-sm font-semibold text-foreground flex items-center gap-2 whitespace-nowrap">
+            {readOnly ? <Lock className="w-4 h-4 text-muted" aria-hidden="true" /> : <Settings2 className="w-4 h-4 text-accent-primary" aria-hidden="true" />}
             Configuration
           </h2>
           {!readOnly && !isBooting && (
@@ -125,7 +125,7 @@ const PromptInput: React.FC<PromptInputProps> = ({
                 <select
                   value={provider}
                   onChange={(e) => onProviderChange(e.target.value as KeyProvider)}
-                  className="text-xs bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-slate-300 focus:ring-2 focus:ring-blue-500 outline-none"
+                  className="text-xs bg-background border border-border rounded-lg px-2 py-1.5 text-foreground focus:ring-2 focus:ring-accent-primary outline-none"
                   title="Select AI Provider"
                 >
                   <option value="gemini" disabled={!keys.gemini?.value}>Gemini {keys.gemini?.status === 'verified' ? '✓' : ''}</option>
@@ -140,7 +140,7 @@ const PromptInput: React.FC<PromptInputProps> = ({
               <button 
                 onClick={onSaveTemplate}
                 disabled={!input.trim()}
-                className="btn-ghost px-3 py-1.5 text-xs"
+                className="btn-secondary text-xs px-3 py-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
                 title="Save current input text as a reusable template"
               >
                 <LayoutTemplate className="w-3.5 h-3.5" aria-hidden="true" />
@@ -150,7 +150,7 @@ const PromptInput: React.FC<PromptInputProps> = ({
               <button 
                 onClick={onSave}
                 disabled={!input.trim()}
-                className="btn-ghost px-3 py-1.5 text-xs"
+                className="btn-secondary text-xs px-3 py-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
                 title="Save current configuration as a project"
               >
                 <Save className="w-3.5 h-3.5" aria-hidden="true" />
@@ -159,7 +159,7 @@ const PromptInput: React.FC<PromptInputProps> = ({
 
               <Dropdown
                 trigger={
-                  <button className="flex items-center gap-2 text-xs font-medium text-indigo-400 hover:text-indigo-300 transition-colors bg-indigo-500/5 px-3 py-1.5 rounded-lg border border-indigo-500/10 hover:border-indigo-500/30 focus:ring-2 focus:ring-indigo-500 outline-none">
+                  <button className="flex items-center gap-2 text-xs font-medium text-accent-primary hover:text-accent-primary-hover transition-colors bg-accent-primary-subtle px-3 py-1.5 rounded-lg border border-accent-primary/20 hover:border-accent-primary/30 focus:ring-2 focus:ring-accent-primary outline-none">
                     <Lightbulb className="w-3.5 h-3.5" aria-hidden="true" />
                     <span className="hidden sm:inline">Examples</span>
                     <ChevronDown className="w-3 h-3" aria-hidden="true" />
@@ -199,7 +199,7 @@ const PromptInput: React.FC<PromptInputProps> = ({
 
       {/* Advanced Options Checkboxes */}
       {isAdvancedMode && (
-        <div className={`px-6 py-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 bg-slate-800/30 border-b border-slate-800 animate-in fade-in duration-300 ${readOnly ? 'pointer-events-none grayscale-[0.5]' : ''}`}>
+        <div className={`px-6 py-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 bg-elevated border-b border-border animate-in fade-in duration-300 ${readOnly ? 'pointer-events-none opacity-50' : ''}`}>
           <Checkbox
             label="Stack Recs"
             icon={<span className="text-xs">⚡</span>}
@@ -268,15 +268,15 @@ const PromptInput: React.FC<PromptInputProps> = ({
       <div className="flex-1 px-6 pb-6 flex flex-col gap-3">
         <div className="flex-1 flex flex-col">
           <div className="flex items-center justify-between mb-2">
-            <label htmlFor="main-input" className="text-xs font-medium text-slate-200 uppercase tracking-wider flex items-center gap-2">
+            <label htmlFor="main-input" className="text-xs font-medium text-foreground uppercase tracking-wider flex items-center gap-2">
               {options.mode === GenerationMode.OUTLINE ? '📋 Rough Topic or Idea' : '💡 Your Rough Idea'}
             </label>
             <div className="flex items-center gap-2">
-              <span className="text-xs text-slate-400">{input.length} chars • ~{useMemo(() => Math.ceil(input.length / 4), [input.length])} tokens</span>
+              <span className="text-xs text-muted">{input.length} chars • ~{useMemo(() => Math.ceil(input.length / 4), [input.length])} tokens</span>
               {input.length > 0 && !readOnly && (
                 <button
                   onClick={() => setInput('')}
-                  className="text-xs text-slate-400 hover:text-red-400 transition-colors px-2 py-1 rounded hover:bg-slate-700"
+                  className="text-xs text-muted hover:text-accent-error transition-colors px-2 py-1 rounded hover:bg-elevated"
                   title="Clear input"
                 >
                   Clear
@@ -315,13 +315,14 @@ const PromptInput: React.FC<PromptInputProps> = ({
             disabled={isLoading || !input.trim() || isBooting || !!validationError}
             className={`
               mt-1 relative w-full py-4 rounded-xl font-bold text-white shadow-lg
-              transition-all duration-300 flex items-center justify-center gap-3 overflow-hidden focus-ring
+              transition-all duration-200 flex items-center justify-center gap-3 overflow-hidden
+              focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background
               ${isLoading || !input.trim() || isBooting || !!validationError
-                ? 'bg-secondary text-muted cursor-not-allowed' 
+                ? 'bg-border text-muted cursor-not-allowed opacity-50' 
                 : options.useThinking
-                  ? 'gradient-thinking hover:shadow-purple-500/25 hover:scale-[1.02]'
-                  : 'gradient-primary hover:shadow-blue-500/25 hover:scale-[1.02]'}
-              active:scale-[0.99]
+                  ? 'bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 hover:shadow-xl hover:-translate-y-0.5 focus:ring-purple-500'
+                  : 'bg-gradient-to-r from-accent-primary to-accent-primary-hover hover:from-accent-primary-hover hover:to-accent-primary hover:shadow-xl hover:-translate-y-0.5 focus:ring-accent-primary'}
+              active:translate-y-0
             `}
           >
             {isLoading ? (

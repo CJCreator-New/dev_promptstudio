@@ -21,8 +21,8 @@ export const Textarea: React.FC<TextareaProps> = React.memo(({
   const errorId = error ? `${textareaId}-error` : undefined;
   const helperId = helperText ? `${textareaId}-helper` : undefined;
   
-  const textareaClasses = `w-full input-base rounded-xl p-4 placeholder-slate-500 resize font-mono leading-relaxed min-h-[300px] sm:min-h-[350px] lg:min-h-[400px] bg-gradient-to-br from-slate-800 to-slate-900 text-slate-100 shadow-inner selection:bg-blue-500/30 ${
-    error ? 'input-error border-red-500/50' : 'input-valid border-blue-500/20 focus:border-blue-500/50'
+  const textareaClasses = `w-full rounded-xl p-4 placeholder-slate-400 dark:placeholder-slate-500 resize font-mono leading-relaxed min-h-[300px] sm:min-h-[350px] lg:min-h-[400px] bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-inner selection:bg-blue-500/30 border will-change-contents ${
+    error ? 'border-red-500/50' : 'border-slate-300 dark:border-blue-500/20 focus:border-blue-500 dark:focus:border-blue-500/50'
   } ${className}`;
   
   const charCount = typeof value === 'string' ? value.length : 0;

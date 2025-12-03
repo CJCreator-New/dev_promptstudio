@@ -23,14 +23,14 @@ export const Checkbox: React.FC<CheckboxProps> = React.memo(({
           className="peer sr-only"
           {...props}
         />
-        <div className="w-4 h-4 border border-slate-600 rounded bg-slate-800 peer-checked:bg-indigo-500 peer-checked:border-indigo-500 transition-colors focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-900" />
+        <div className="w-4 h-4 border-[1.5px] border-border rounded bg-background peer-checked:bg-accent-primary peer-checked:border-accent-primary transition-all shadow-sm peer-focus-visible:ring-2 peer-focus-visible:ring-accent-primary peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-background" />
         {icon && (
           <div className="absolute inset-0 flex items-center justify-center text-white opacity-0 peer-checked:opacity-100">
             {icon}
           </div>
         )}
       </div>
-      <span className="text-sm text-slate-400 group-hover:text-slate-300 transition-colors">
+      <span className="text-sm text-muted group-hover:text-foreground transition-colors font-medium">
         {label}
       </span>
     </label>

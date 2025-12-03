@@ -132,12 +132,12 @@ const PromptOutput: React.FC<PromptOutputProps> = ({
 
   if (!enhancedPrompt && !originalPrompt && !isLoading) {
     return (
-      <div className="h-full bg-slate-900 border border-slate-800 rounded-2xl flex flex-col items-center justify-center p-8 text-center border-dashed">
-        <div className="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mb-4">
-          <Terminal className="w-8 h-8 text-slate-600" aria-hidden="true" />
+      <div className="h-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-2xl flex flex-col items-center justify-center p-8 text-center border-dashed transition-colors">
+        <div className="w-16 h-16 bg-slate-200 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4 transition-colors">
+          <Terminal className="w-8 h-8 text-slate-400 dark:text-slate-600" aria-hidden="true" />
         </div>
-        <h3 className="text-lg font-semibold text-slate-300 mb-2">Ready to Enhance</h3>
-        <p className="text-slate-500 max-w-sm text-sm">
+        <h3 className="text-lg font-semibold text-slate-700 dark:text-slate-300 mb-2">Ready to Enhance</h3>
+        <p className="text-slate-600 dark:text-slate-500 max-w-sm text-sm">
           Enter your rough design or coding ideas on the left, and watch them transform into professional specifications here.
         </p>
       </div>
@@ -145,10 +145,10 @@ const PromptOutput: React.FC<PromptOutputProps> = ({
   }
 
   return (
-    <div className="flex flex-col h-full bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl shadow-black/20">
+    <div className="flex flex-col h-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-xl transition-colors">
       {/* Header */}
-      <div className="px-4 py-3 border-b border-slate-700 bg-slate-800 flex items-center justify-between shrink-0 flex-wrap gap-2">
-        <h2 className="text-sm font-semibold text-blue-400 flex items-center gap-2">
+      <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 flex items-center justify-between shrink-0 flex-wrap gap-2 transition-colors">
+        <h2 className="text-sm font-semibold text-blue-600 dark:text-blue-400 flex items-center gap-2">
           <FileText className="w-4 h-4" aria-hidden="true" />
           Enhanced Output
         </h2>
@@ -157,7 +157,7 @@ const PromptOutput: React.FC<PromptOutputProps> = ({
            {onABTest && (
             <button
               onClick={onABTest}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-700 text-slate-200 hover:bg-slate-600 border border-slate-600 transition-all focus:ring-2 focus:ring-blue-500 outline-none"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-600 border border-slate-300 dark:border-slate-600 transition-all focus:ring-2 focus:ring-blue-500 outline-none"
               title="A/B Test Variants"
             >
               <FlaskConical className="w-3.5 h-3.5" />
@@ -168,7 +168,7 @@ const PromptOutput: React.FC<PromptOutputProps> = ({
            {onEvaluate && enhancedPrompt && (
             <button
               onClick={onEvaluate}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-700 text-slate-200 hover:bg-slate-600 border border-slate-600 transition-all focus:ring-2 focus:ring-blue-500 outline-none"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-600 border border-slate-300 dark:border-slate-600 transition-all focus:ring-2 focus:ring-blue-500 outline-none"
               title="Evaluate Output"
             >
               <Target className="w-3.5 h-3.5" />
@@ -180,7 +180,7 @@ const PromptOutput: React.FC<PromptOutputProps> = ({
            {onChainPrompt && enhancedPrompt && (
             <button
               onClick={() => onChainPrompt(enhancedPrompt)}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-700 text-slate-200 hover:bg-slate-600 border border-slate-600 transition-all focus:ring-2 focus:ring-blue-500 outline-none"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-600 border border-slate-300 dark:border-slate-600 transition-all focus:ring-2 focus:ring-blue-500 outline-none"
               title="Use this output as input for the next prompt"
             >
               <Link className="w-3.5 h-3.5" />
@@ -196,8 +196,8 @@ const PromptOutput: React.FC<PromptOutputProps> = ({
               className={`
                 flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed focus:ring-2 focus:ring-blue-500 outline-none
                 ${shared
-                  ? 'bg-blue-500/10 text-blue-400 border border-blue-500/30' 
-                  : 'bg-slate-700 text-slate-200 hover:bg-slate-600 border border-slate-600'}
+                  ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/30' 
+                  : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-600 border border-slate-300 dark:border-slate-600'}
               `}
               title="Create a shareable link"
             >
@@ -225,8 +225,8 @@ const PromptOutput: React.FC<PromptOutputProps> = ({
             className={`
               flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed focus:ring-2 focus:ring-blue-500 outline-none
               ${copied 
-                ? 'bg-green-500/10 text-green-400 border border-green-500/30' 
-                : 'bg-slate-700 text-slate-200 hover:bg-slate-600 border border-slate-600'}
+                ? 'bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/30' 
+                : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-600 border border-slate-300 dark:border-slate-600'}
             `}
           >
             {copied ? (
@@ -245,22 +245,22 @@ const PromptOutput: React.FC<PromptOutputProps> = ({
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-auto p-0 relative group bg-slate-900">
+      <div className="flex-1 overflow-auto p-0 relative group bg-white dark:bg-slate-900 transition-colors">
         
         {/* Collapsible Original Prompt Section */}
         {originalPrompt && (
-           <div className="border-b border-slate-700 bg-slate-800/50">
+           <div className="border-b border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800/50 transition-colors">
              <button 
                onClick={() => setShowOriginal(!showOriginal)}
-               className="w-full flex items-center justify-between px-4 py-3 hover:bg-slate-700/50 transition-colors text-left group/btn focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset"
+               className="w-full flex items-center justify-between px-4 py-3 hover:bg-slate-200 dark:hover:bg-slate-700/50 transition-colors text-left group/btn focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset"
                aria-expanded={showOriginal}
              >
-                <div className="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-wider group-hover/btn:text-slate-300 transition-colors">
+                <div className="flex items-center gap-2 text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider group-hover/btn:text-slate-700 dark:group-hover/btn:text-slate-300 transition-colors">
                   {showOriginal ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
                   Original Input
                 </div>
                 {!showOriginal && (
-                    <p className="text-xs text-slate-400 italic line-clamp-1 flex-1 ml-4 opacity-70">
+                    <p className="text-xs text-slate-500 dark:text-slate-400 italic line-clamp-1 flex-1 ml-4 opacity-70">
                         {originalPrompt}
                     </p>
                 )}
@@ -268,8 +268,8 @@ const PromptOutput: React.FC<PromptOutputProps> = ({
              
              {showOriginal && (
                <div className="px-4 pb-4 animate-in slide-in-from-top-2 fade-in duration-200">
-                 <div className="p-4 bg-slate-900 rounded-lg border border-slate-700 shadow-inner">
-                   <div className="text-sm text-slate-200 font-mono leading-relaxed whitespace-pre-wrap break-words">
+                 <div className="p-4 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700 shadow-inner transition-colors">
+                   <div className="text-sm text-slate-800 dark:text-slate-200 font-mono leading-relaxed whitespace-pre-wrap break-words">
                      {originalPrompt}
                    </div>
                  </div>
@@ -293,7 +293,7 @@ const PromptOutput: React.FC<PromptOutputProps> = ({
 
           {enhancedPrompt ? (
             <div 
-              className="prose prose-invert prose-sm max-w-none prose-pre:bg-slate-800 prose-pre:border prose-pre:border-slate-700 prose-headings:text-blue-300 prose-a:text-blue-400 prose-strong:text-blue-200 prose-code:text-blue-300"
+              className="prose dark:prose-invert prose-sm max-w-none prose-pre:bg-slate-100 dark:prose-pre:bg-slate-800 prose-pre:border prose-pre:border-slate-300 dark:prose-pre:border-slate-700 prose-headings:text-blue-600 dark:prose-headings:text-blue-300 prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-strong:text-blue-700 dark:prose-strong:text-blue-200 prose-code:text-blue-600 dark:prose-code:text-blue-300"
               dangerouslySetInnerHTML={{ __html: renderedMarkdown }}
             />
           ) : null}

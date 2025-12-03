@@ -31,17 +31,17 @@ export const ModeSelector: React.FC<ModeSelectorProps> = ({ mode, onChange, disa
   ];
 
   return (
-    <div className="space-y-1 min-w-0 md:col-span-4 border-b border-slate-700/50 pb-4 mb-2">
-      <div className="flex items-center justify-center gap-2 bg-slate-900/50 p-1 rounded-lg border border-slate-800 inline-flex mx-auto w-full md:w-auto overflow-x-auto">
+    <div className="space-y-1 min-w-0 border-b border-border pb-4">
+      <div className="flex items-center justify-center gap-2 bg-elevated p-1.5 rounded-lg border border-border shadow-sm inline-flex mx-auto w-full md:w-auto overflow-x-auto">
         {modes.map((modeOption) => (
           <button
             key={modeOption.value}
             onClick={() => onChange(modeOption.value)}
             disabled={disabled}
-            className={`flex-1 md:flex-none px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center justify-center gap-2 whitespace-nowrap ${
+            className={`flex-1 md:flex-none px-4 py-2.5 rounded-lg text-sm font-semibold transition-all flex items-center justify-center gap-2 whitespace-nowrap ${
               mode === modeOption.value 
-                ? 'bg-indigo-600 text-white shadow' 
-                : 'text-slate-400 hover:text-white'
+                ? 'bg-accent-primary text-white shadow-md' 
+                : 'text-muted hover:text-foreground hover:bg-overlay'
             } disabled:opacity-50 disabled:cursor-not-allowed`}
             title={modeOption.title}
           >
