@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Eye, EyeOff, Check, X, Loader2, ExternalLink } from 'lucide-react';
 import { KeyProvider, ProviderConfig } from '../../types/apiKeys';
+import { useFreeModels } from '../../hooks/useFreeModels';
+import { getFreeModels } from '../../services/openRouterSync';
 
 interface ApiKeyInputRowProps {
   provider: KeyProvider;
@@ -14,9 +16,7 @@ interface ApiKeyInputRowProps {
   onVerify: (provider: KeyProvider, value: string) => void;
 }
 
-import { FREE_OPENROUTER_MODELS } from '../../utils/openRouterModels';
 
-const OPENROUTER_MODELS = FREE_OPENROUTER_MODELS.map(m => ({ value: m.id, label: m.label }));
 
 export const ApiKeyInputRow: React.FC<ApiKeyInputRowProps> = ({
   provider,
@@ -29,9 +29,30 @@ export const ApiKeyInputRow: React.FC<ApiKeyInputRowProps> = ({
   onDelete,
   onVerify,
 }) => {
+  const { models: freeModels } = useFreeModels();
   const [inputValue, setInputValue] = useState(value);
   const [selectedModel, setSelectedModel] = useState(model || '');
   const [showKey, setShowKey] = useState(false);
+  
+  // Default fallback models
+  const defaultModels = [
+    { value: 'google/gemini-2.0-flash-exp:free', label: 'Gemini 2.0 Flash (Free, 1M)' },
+    { value: 'meta-llama/llama-3.3-70b-instruct:free', label: 'Llama 3.3 70B (Free, 128K)' },
+    { value: 'qwen/qwen-2.5-72b-instruct:free', label: 'Qwen 2.5 72B (Free, 32K)' },
+    { value: 'microsoft/phi-4:free', label: 'Phi-4 (Free, 16K)' },
+    { value: 'tng/r1t-chimera:free', label: 'R1T Chimera (Free, 128K)' },
+  ];
+  
+  const openRouterModels = provider === 'openrouter' && freeModels.length > 0
+    ? freeModels.map(m => ({ value: m.id, label: `${m.name} (${(m.contextLength/1000).toFixed(0)}K)` }))
+    : defaultModels;
+  
+  // Trigger sync when OpenRouter key is saved
+  useEffect(() => {
+    if (provider === 'openrouter' && value && freeModels.length === 0) {
+      getFreeModels(value).catch(console.error);
+    }
+  }, [provider, value, freeModels.length]);
 
   const handleSave = () => {
     if (inputValue.trim()) {
@@ -79,10 +100,15 @@ export const ApiKeyInputRow: React.FC<ApiKeyInputRowProps> = ({
             onChange={(e) => handleModelChange(e.target.value)}
             className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-slate-100 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
           >
-            {OPENROUTER_MODELS.map(m => (
+            {openRouterModels.map(m => (
               <option key={m.value} value={m.value}>{m.label}</option>
             ))}
           </select>
+          <p className="text-xs text-slate-400 mt-1">
+            {freeModels.length > 0 
+              ? `✓ ${freeModels.length} free models synced` 
+              : 'Using default models. Sync to get latest.'}
+          </p>
         </div>
       )}
 

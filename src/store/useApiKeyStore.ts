@@ -5,10 +5,10 @@ import { KeyProvider, ApiKeyData } from '../types/apiKeys';
 interface ApiKeyState {
   keys: Record<KeyProvider, ApiKeyData | null>;
   models: Record<KeyProvider, string>;
-  setKey: (provider: KeyProvider, value: string, model?: string) => void;
+  setKey: (provider: KeyProvider, value: string, model?: string) => Promise<void>;
   setModel: (provider: KeyProvider, model: string) => void;
   updateKeyStatus: (provider: KeyProvider, status: ApiKeyData['status']) => void;
-  deleteKey: (provider: KeyProvider) => void;
+  deleteKey: (provider: KeyProvider) => Promise<void>;
   getKey: (provider: KeyProvider) => string | null;
   getModel: (provider: KeyProvider) => string;
 }
