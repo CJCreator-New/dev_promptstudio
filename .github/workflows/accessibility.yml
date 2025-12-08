@@ -1,0 +1,74 @@
+name: Accessibility Tests
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  a11y-tests:
+    name: WCAG 2.1 AA Compliance
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Install Playwright
+        run: npx playwright install --with-deps chromium
+      
+      - name: Start dev server
+        run: npm run dev &
+        env:
+          CI: true
+      
+      - name: Wait for server
+        run: npx wait-on http://localhost:3000 --timeout 60000
+      
+      - name: Run accessibility tests
+        run: npm run a11y:test
+      
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: a11y-test-results
+          path: test-results/
+          retention-days: 7
+      
+      - name: Run Pa11y audit
+        run: npm run a11y:audit
+        continue-on-error: true
+      
+      - name: Upload audit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: a11y-audit-report
+          path: .a11y/
+          retention-days: 30
+      
+      - name: Comment PR with results
+        if: github.event_name == 'pull_request' && failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const report = JSON.parse(fs.readFileSync('.a11y/audit-report.json', 'utf8'));
+            const errors = report.reduce((sum, r) => sum + r.issues.filter(i => i.type === 'error').length, 0);
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## ⚠️ Accessibility Issues Found\n\n${errors} WCAG 2.1 AA violations detected.\n\nPlease review the [audit report](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}) and fix the issues.`
+            });

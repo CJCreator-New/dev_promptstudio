@@ -1,0 +1,33 @@
+{
+  "defaults": {
+    "standard": "WCAG2AA",
+    "runners": ["axe", "htmlcs"],
+    "timeout": 30000,
+    "wait": 2000,
+    "chromeLaunchConfig": {
+      "args": ["--no-sandbox", "--disable-setuid-sandbox"]
+    },
+    "hideElements": ".toast, .notification",
+    "ignore": [
+      "notice",
+      "warning"
+    ]
+  },
+  "urls": [
+    {
+      "url": "http://localhost:3000",
+      "screenCapture": ".a11y/screenshots/homepage.png",
+      "actions": [
+        "wait for element body to be visible"
+      ]
+    },
+    {
+      "url": "http://localhost:3000",
+      "screenCapture": ".a11y/screenshots/prompt-input.png",
+      "actions": [
+        "wait for element #main-input to be visible",
+        "set field #main-input to Test prompt"
+      ]
+    }
+  ]
+}

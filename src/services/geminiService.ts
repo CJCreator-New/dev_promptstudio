@@ -1,4 +1,4 @@
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenerativeAI as GoogleGenAI } from "@google/generative-ai";
 import { EnhancementOptions, GenerationMode } from "../types";
 import { RateLimitError, APIError } from "../utils/validation";
 import { logger } from "../utils/errorLogging";

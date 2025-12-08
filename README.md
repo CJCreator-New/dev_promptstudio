@@ -198,25 +198,35 @@ src/
 
 ## Testing
 
+### Unit Tests
 ```bash
-# Run all tests
-npm test
-
-# Run tests in watch mode
-npm test -- --watch
-
-# Run with coverage
-npm test:coverage
-
-# Run specific test file
-npm test -- accessibility-audit.test.tsx
+npm test                    # Run all unit tests
+npm test -- --watch         # Watch mode
+npm test:coverage           # With coverage
 ```
 
+### E2E Tests (Cross-Browser)
+```bash
+npm run test:e2e            # All browsers
+npm run test:e2e:critical   # Fast smoke tests
+npm run test:e2e:mobile     # Mobile devices
+npm run test:e2e:report     # View results
+```
+
+**Browsers Tested**: Chrome, Firefox, Safari, Edge, iOS Safari, Chrome Android
+
+📖 **Testing Guides**:
+- [Quick Start Guide](docs/TESTING_QUICK_START.md) - Get started in 5 minutes
+- [Cross-Browser Strategy](docs/CROSS_BROWSER_TESTING_STRATEGY.md) - Comprehensive testing plan
+- [Browser Compatibility](docs/BROWSER_COMPATIBILITY.md) - Known issues & workarounds
+- [Testing Checklist](.github/TESTING_CHECKLIST.md) - Pre-release validation
+
 ### Test Coverage
-- Property tests validate requirements
-- Unit tests cover implementation details
-- Accessibility tests with axe-core
-- Integration tests for critical flows
+- ✅ Unit tests with Vitest
+- ✅ E2E tests with Playwright (9 browsers/devices)
+- ✅ Accessibility tests with axe-core
+- ✅ Visual regression ready (Percy)
+- ✅ CI/CD with GitHub Actions
 
 ## Build
 
@@ -251,12 +261,29 @@ npm run preview
 
 ## Accessibility
 
-See [ACCESSIBILITY.md](ACCESSIBILITY.md) for:
-- Automated testing with axe-core
-- Manual testing checklists
-- Screen reader testing (NVDA/JAWS/VoiceOver)
-- Keyboard navigation guide
-- WCAG AA compliance
+**Standard**: WCAG 2.1 Level AA  
+**Status**: ✅ Fully Compliant
+
+### Quick Start
+```bash
+npm run a11y:test      # Automated tests
+npm run a11y:audit     # Pa11y audit
+npm run a11y:report    # View report
+npm run lint:a11y      # Lint for issues
+```
+
+### Tools Configured
+- ✅ **Automated**: Playwright + axe-core
+- ✅ **CI/CD**: GitHub Actions integration
+- ✅ **Linting**: ESLint jsx-a11y rules
+- ✅ **Auditing**: Pa11y CI
+- ✅ **Manual**: Browser extensions + screen readers
+
+📖 **Documentation**:
+- [Quick Start Guide](docs/ACCESSIBILITY_QUICK_START.md) - Get started in 5 minutes
+- [Compliance Guide](docs/ACCESSIBILITY_COMPLIANCE.md) - Complete WCAG 2.1 AA guide
+- [Manual Testing](docs/ACCESSIBILITY_MANUAL_TESTING.md) - Step-by-step procedures
+- [Original Guide](ACCESSIBILITY.md) - Legacy documentation
 
 ## Performance
 
