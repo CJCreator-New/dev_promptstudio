@@ -1,49 +1,66 @@
-import React from 'react';
-import { LucideIcon } from 'lucide-react';
+import React, { useState } from 'react';
+import { Loader2, Check } from 'lucide-react';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'ghost' | 'danger';
   size?: 'sm' | 'md' | 'lg';
-  icon?: LucideIcon;
   loading?: boolean;
+  success?: boolean;
+  icon?: React.ReactNode;
+  children: React.ReactNode;
 }
-
-const variants = {
-  primary: 'bg-blue-600 hover:bg-blue-500 text-white',
-  secondary: 'bg-slate-700 hover:bg-slate-600 text-slate-100 border border-slate-600',
-  ghost: 'hover:bg-slate-700 text-slate-300 hover:text-white',
-  danger: 'bg-red-600 hover:bg-red-500 text-white'
-};
-
-const sizes = {
-  sm: 'px-3 py-1.5 text-sm min-h-[32px]',
-  md: 'px-4 py-2 text-sm min-h-[40px]',
-  lg: 'px-6 py-3 text-base min-h-[48px]'
-};
 
 export const Button: React.FC<ButtonProps> = ({
   variant = 'primary',
   size = 'md',
-  icon: Icon,
-  loading,
+  loading = false,
+  success = false,
+  icon,
   children,
   className = '',
   disabled,
+  onClick,
   ...props
 }) => {
-  const baseClasses = 'inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-colors focus:ring-2 focus:ring-blue-500 outline-none disabled:opacity-50 disabled:cursor-not-allowed';
+  const [isPressed, setIsPressed] = useState(false);
+
+  const baseStyles = 'inline-flex items-center justify-center gap-2 font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-950 disabled:opacity-50 disabled:cursor-not-allowed';
   
+  const variants = {
+    primary: 'bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white focus:ring-indigo-500 shadow-sm hover:shadow-md',
+    secondary: 'bg-slate-800 hover:bg-slate-700 active:bg-slate-900 text-slate-200 focus:ring-slate-600 border border-slate-700',
+    ghost: 'hover:bg-slate-800/50 active:bg-slate-800 text-slate-300 focus:ring-slate-700',
+    danger: 'bg-red-600 hover:bg-red-500 active:bg-red-700 text-white focus:ring-red-500 shadow-sm hover:shadow-md'
+  };
+
+  const sizes = {
+    sm: 'px-3 py-1.5 text-xs',
+    md: 'px-4 py-2.5 text-sm',
+    lg: 'px-6 py-3 text-base'
+  };
+
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (disabled || loading) return;
+    
+    setIsPressed(true);
+    setTimeout(() => setIsPressed(false), 200);
+    
+    onClick?.(e);
+  };
+
   return (
     <button
-      className={`${baseClasses} ${variants[variant]} ${sizes[size]} ${className}`}
+      className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${
+        isPressed ? 'scale-95' : 'scale-100'
+      } ${success ? 'animate-button-success' : ''} ${className}`}
       disabled={disabled || loading}
+      onClick={handleClick}
       {...props}
     >
-      {loading && (
-        <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-      )}
-      {Icon && !loading && <Icon className="w-4 h-4" />}
-      {children}
+      {loading && <Loader2 className="w-4 h-4 animate-spin" />}
+      {success && <Check className="w-4 h-4 animate-field-success" />}
+      {!loading && !success && icon}
+      <span>{children}</span>
     </button>
   );
 };

@@ -1,5 +1,6 @@
 import React from 'react';
-import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
+import { AlertTriangle, RefreshCw, Home, Download } from 'lucide-react';
+import { getErrorDetails } from '../utils/userFriendlyErrors';
 
 // --- Inline Input Error ---
 interface InlineErrorProps {
@@ -32,11 +33,25 @@ interface FullPageErrorProps {
 
 export const FullPageError: React.FC<FullPageErrorProps> = ({ error, errorId, errorInfo, resetErrorBoundary }) => {
   const [showDetails, setShowDetails] = React.useState(false);
+  const errorDetails = getErrorDetails(error);
 
-  const getUserFriendlyMessage = (error: Error) => {
-    if (error.message.includes('fetch')) return 'Network connection issue. Please check your internet connection.';
-    if (error.message.includes('undefined')) return 'A component failed to load properly.';
-    return 'An unexpected error occurred. Your work has been preserved.';
+  const handleExportState = () => {
+    try {
+      const state = {
+        localStorage: { ...localStorage },
+        timestamp: new Date().toISOString(),
+        error: { message: error.message, name: error.name }
+      };
+      const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `devprompt-backup-${Date.now()}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      console.error('Failed to export state:', e);
+    }
   };
 
   return (
@@ -47,9 +62,12 @@ export const FullPageError: React.FC<FullPageErrorProps> = ({ error, errorId, er
             <AlertTriangle className="w-6 h-6 text-red-500" />
           </div>
           <div className="flex-1">
-            <h1 className="text-xl font-bold text-white mb-2">Something went wrong</h1>
-            <p className="text-slate-400 text-sm">
-              {getUserFriendlyMessage(error)}
+            <h1 className="text-xl font-bold text-white mb-2">{errorDetails.title}</h1>
+            <p className="text-slate-400 text-sm mb-2">
+              {errorDetails.message}
+            </p>
+            <p className="text-indigo-400 text-sm font-medium">
+              {errorDetails.action}
             </p>
             {errorId && (
               <p className="mt-2 text-xs text-slate-500">
@@ -92,27 +110,50 @@ export const FullPageError: React.FC<FullPageErrorProps> = ({ error, errorId, er
           )}
         </div>
 
+        {errorDetails.recoverySteps && errorDetails.recoverySteps.length > 0 && (
+          <div className="bg-indigo-500/10 border border-indigo-500/20 rounded-lg p-4 mb-6">
+            <h3 className="text-sm font-semibold text-indigo-300 mb-2">How to fix this:</h3>
+            <ul className="space-y-2">
+              {errorDetails.recoverySteps.map((step, idx) => (
+                <li key={idx} className="flex items-start gap-2 text-xs text-indigo-200">
+                  <span className="text-indigo-400 font-bold mt-0.5">{idx + 1}.</span>
+                  <span>{step}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
         <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3 mb-6">
           <p className="text-xs text-blue-300">
             ✓ Your work has been automatically saved and will be restored when you continue.
           </p>
         </div>
 
-        <div className="flex gap-3">
+        <div className="flex flex-col gap-3">
+          <div className="flex gap-3">
+            <button
+              onClick={resetErrorBoundary}
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg transition-colors text-sm font-medium focus-ring"
+              data-testid="reset-error-boundary"
+            >
+              <Home className="w-4 h-4" />
+              Continue Working
+            </button>
+            <button
+              onClick={() => window.location.reload()}
+              className="flex items-center justify-center gap-2 px-4 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg transition-colors text-sm font-medium focus-ring"
+            >
+              <RefreshCw className="w-4 h-4" />
+              Reload Page
+            </button>
+          </div>
           <button
-            onClick={resetErrorBoundary}
-            className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg transition-colors text-sm font-medium focus-ring"
-            data-testid="reset-error-boundary"
+            onClick={handleExportState}
+            className="flex items-center justify-center gap-2 px-4 py-2 bg-slate-800/50 hover:bg-slate-800 text-slate-300 rounded-lg transition-colors text-xs font-medium border border-slate-700"
           >
-            <Home className="w-4 h-4" />
-            Continue Working
-          </button>
-          <button
-            onClick={() => window.location.reload()}
-            className="flex items-center justify-center gap-2 px-4 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg transition-colors text-sm font-medium focus-ring"
-          >
-            <RefreshCw className="w-4 h-4" />
-            Reload Page
+            <Download className="w-3 h-3" />
+            Export Backup (Just in Case)
           </button>
         </div>
       </div>
