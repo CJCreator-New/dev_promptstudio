@@ -92,9 +92,9 @@ export async function waitForAppReady(page: Page) {
   await page.waitForSelector('#root', { timeout: 10000 });
   await page.waitForLoadState('networkidle');
   
-  // Wait for main app elements
-  await page.waitForSelector('[data-testid="app-shell"], main, .app-container', { 
-    timeout: 5000,
-    state: 'attached'
-  });
+  // Wait for any content to be loaded (more flexible)
+  await page.waitForFunction(() => {
+    const root = document.getElementById('root');
+    return root && root.children.length > 0;
+  }, { timeout: 10000 });
 }

@@ -18,7 +18,7 @@ export default defineConfig({
     // Use pre-authenticated state for faster tests
     storageState: 'e2e/auth.json'
   },
-  globalSetup: require.resolve('./e2e/auth-setup.ts'),
+  globalSetup: './e2e/auth-setup.ts',
   projects: [
     {
       name: 'chromium',

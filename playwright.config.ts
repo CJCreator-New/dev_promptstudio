@@ -17,7 +17,7 @@ export default defineConfig({
     screenshot: 'only-on-failure',
     video: 'retain-on-failure'
   },
-  globalSetup: require.resolve('./e2e/global-setup.ts'),
+  globalSetup: './e2e/global-setup.ts',
   projects: [
     {
       name: 'chromium',

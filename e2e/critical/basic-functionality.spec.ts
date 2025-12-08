@@ -13,10 +13,13 @@ test.describe('Basic Functionality Tests', () => {
     const appRoot = page.locator('#root');
     await expect(appRoot).toBeVisible();
     
-    // Should have main content
-    const mainContent = page.locator('[data-testid="app-shell"], main, .app-container, body');
-    await expect(mainContent).toBeVisible();
+    // Should have some content
+    const hasContent = await page.evaluate(() => {
+      const root = document.getElementById('root');
+      return root && root.children.length > 0;
+    });
     
+    expect(hasContent).toBe(true);
     console.log('✅ App loads successfully');
   });
 

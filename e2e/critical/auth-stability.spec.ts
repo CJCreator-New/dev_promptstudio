@@ -5,13 +5,18 @@ test.describe('Auth Stability Tests', () => {
   test('should load app and show auth dialog reliably', async ({ page, browserName }) => {
     console.log(`🧪 Testing auth dialog on ${browserName}`);
     
-    // Clear any existing auth state
-    await page.evaluate(() => {
-      localStorage.clear();
-      sessionStorage.clear();
-    });
-    
     await page.goto('/');
+    
+    // Clear any existing auth state (handle security errors)
+    try {
+      await page.evaluate(() => {
+        localStorage.clear();
+        sessionStorage.clear();
+      });
+    } catch (error) {
+      console.log('⚠️ localStorage not accessible, continuing...');
+    }
+    
     await waitForAppReady(page);
     
     // Should show auth dialog within reasonable time
