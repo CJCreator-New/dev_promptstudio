@@ -1,0 +1,64 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Visual Components > Button sizes render correctly 1`] = `
+<div>
+  <div>
+    <button
+      class="inline-flex items-center justify-center gap-2 font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-950 disabled:opacity-50 disabled:cursor-not-allowed bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white focus:ring-indigo-500 shadow-sm hover:shadow-md px-3 py-1.5 text-xs scale-100  "
+    >
+      <span>
+        Small
+      </span>
+    </button>
+    <button
+      class="inline-flex items-center justify-center gap-2 font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-950 disabled:opacity-50 disabled:cursor-not-allowed bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white focus:ring-indigo-500 shadow-sm hover:shadow-md px-4 py-2.5 text-sm scale-100  "
+    >
+      <span>
+        Medium
+      </span>
+    </button>
+    <button
+      class="inline-flex items-center justify-center gap-2 font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-950 disabled:opacity-50 disabled:cursor-not-allowed bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white focus:ring-indigo-500 shadow-sm hover:shadow-md px-6 py-3 text-base scale-100  "
+    >
+      <span>
+        Large
+      </span>
+    </button>
+  </div>
+</div>
+`;
+
+exports[`Visual Components > Button variants render correctly 1`] = `
+<div>
+  <div>
+    <button
+      class="inline-flex items-center justify-center gap-2 font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-950 disabled:opacity-50 disabled:cursor-not-allowed bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white focus:ring-indigo-500 shadow-sm hover:shadow-md px-4 py-2.5 text-sm scale-100  "
+    >
+      <span>
+        Primary
+      </span>
+    </button>
+    <button
+      class="inline-flex items-center justify-center gap-2 font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-950 disabled:opacity-50 disabled:cursor-not-allowed bg-slate-800 hover:bg-slate-700 active:bg-slate-900 text-slate-200 focus:ring-slate-600 border border-slate-700 px-4 py-2.5 text-sm scale-100  "
+    >
+      <span>
+        Secondary
+      </span>
+    </button>
+    <button
+      class="inline-flex items-center justify-center gap-2 font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-950 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-800/50 active:bg-slate-800 text-slate-300 focus:ring-slate-700 px-4 py-2.5 text-sm scale-100  "
+    >
+      <span>
+        Ghost
+      </span>
+    </button>
+    <button
+      class="inline-flex items-center justify-center gap-2 font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-950 disabled:opacity-50 disabled:cursor-not-allowed bg-red-600 hover:bg-red-500 active:bg-red-700 text-white focus:ring-red-500 shadow-sm hover:shadow-md px-4 py-2.5 text-sm scale-100  "
+    >
+      <span>
+        Danger
+      </span>
+    </button>
+  </div>
+</div>
+`;
