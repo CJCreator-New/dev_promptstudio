@@ -1,0 +1,132 @@
+/* Mobile-First Adaptive Components */
+
+/* Base (Mobile) */
+.adaptive-card {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  background: var(--bg-elevated);
+}
+
+.adaptive-button {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border-radius: 0.5rem;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.adaptive-input {
+  min-height: 44px;
+  padding: 0.75rem;
+  font-size: 16px; /* Prevents zoom on iOS */
+  border-radius: 0.5rem;
+}
+
+.adaptive-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 0.5rem;
+  background: var(--bg-elevated);
+  border-top: 1px solid var(--border);
+}
+
+/* Tablet (md) */
+@media (min-width: 768px) {
+  .adaptive-card {
+    padding: 1.5rem;
+  }
+
+  .adaptive-button {
+    min-height: 40px;
+    padding: 0.625rem 1.25rem;
+  }
+
+  .adaptive-input {
+    min-height: 40px;
+    padding: 0.625rem 1rem;
+  }
+
+  .adaptive-nav {
+    position: static;
+    border-top: none;
+    border-bottom: 1px solid var(--border);
+  }
+}
+
+/* Desktop (lg) */
+@media (min-width: 1024px) {
+  .adaptive-card {
+    padding: 2rem;
+  }
+
+  .adaptive-button {
+    min-height: 36px;
+    padding: 0.5rem 1.5rem;
+  }
+
+  .adaptive-input {
+    min-height: 36px;
+  }
+}
+
+/* Touch devices */
+@media (hover: none) and (pointer: coarse) {
+  .adaptive-button,
+  .adaptive-input,
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .adaptive-button:active {
+    transform: scale(0.98);
+  }
+
+  /* Larger tap targets */
+  a, button, [role="button"] {
+    padding: 0.5rem;
+  }
+}
+
+/* Mouse devices */
+@media (hover: hover) and (pointer: fine) {
+  .adaptive-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+
+  .adaptive-card:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* High contrast */
+@media (prefers-contrast: high) {
+  .adaptive-button,
+  .adaptive-input,
+  .adaptive-card {
+    border: 2px solid currentColor;
+  }
+}
+
+/* Dark mode adaptations */
+@media (prefers-color-scheme: dark) {
+  .adaptive-card {
+    background: var(--bg-elevated-dark, #1e293b);
+  }
+}

@@ -44,3 +44,23 @@ coverage/
 # Temporary folders
 tmp/
 temp/
+
+# Test artifacts
+test-results/
+playwright-report/
+.a11y/
+
+# Duplicate directories (should only exist in src/)
+/components/
+/hooks/
+/services/
+/utils/
+/index.css
+
+# Debug files
+test-providers.html
+debug-start.js
+build-app.js
+
+# Legacy specs
+.kiro/
